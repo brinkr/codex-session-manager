@@ -41,44 +41,59 @@ export default function App() {
   }, []);
 
   return (
-    <div className="h-screen w-screen overflow-hidden flex flex-col bg-noise selection:bg-[#2563EB]/20 selection:text-[#2563EB]">
+    <div className="h-screen w-screen overflow-hidden flex items-center justify-center bg-[var(--color-stone-base)] bg-noise selection:bg-[var(--color-accent-cobalt)]/20 selection:text-[var(--color-accent-cobalt)] p-2 sm:p-6 md:p-8">
       
-      {/* Mac Titlebar */}
-      <div className="h-11 w-full flex items-center px-4 justify-between select-none z-50 relative shrink-0">
-        <div className="flex items-center gap-4">
-          {/* Traffic Lights */}
-          <div className="flex items-center gap-2 w-16 group">
-            <div className="w-3 h-3 rounded-full bg-[#FF5F56] border border-black/10 shadow-sm"></div>
-            <div className="w-3 h-3 rounded-full bg-[#FFBD2E] border border-black/10 shadow-sm"></div>
-            <div className="w-3 h-3 rounded-full bg-[#27C93F] border border-black/10 shadow-sm"></div>
+      {/* App Window */}
+      <div className="w-full max-w-[1440px] h-full max-h-[960px] bg-[var(--color-stone-panel)] rounded-2xl shadow-[0_30px_60px_-15px_rgba(0,0,0,0.15),0_0_0_1px_rgba(0,0,0,0.05),inset_0_1px_0_rgba(255,255,255,0.8)] flex flex-col overflow-hidden relative z-10">
+        
+        {/* Mac Titlebar & App Chrome */}
+        <div className="h-12 w-full flex items-center px-4 justify-between select-none z-50 relative shrink-0 border-b border-black/[0.04] bg-white/40 backdrop-blur-md">
+          <div className="flex items-center gap-4">
+            {/* Traffic Lights */}
+            <div className="flex items-center gap-2 w-16 group">
+              <div className="w-3 h-3 rounded-full bg-[#FF5F56] border border-black/10 shadow-[inset_0_1px_2px_rgba(255,255,255,0.4)]"></div>
+              <div className="w-3 h-3 rounded-full bg-[#FFBD2E] border border-black/10 shadow-[inset_0_1px_2px_rgba(255,255,255,0.4)]"></div>
+              <div className="w-3 h-3 rounded-full bg-[#27C93F] border border-black/10 shadow-[inset_0_1px_2px_rgba(255,255,255,0.4)]"></div>
+            </div>
+          </div>
+          
+          <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
+            <span className="text-[13px] font-semibold text-[var(--color-ink-main)] tracking-wide">
+              Codex Workspace
+            </span>
+            <span className="px-1.5 py-0.5 rounded bg-black/[0.04] text-[10px] font-mono font-medium text-[var(--color-ink-muted)] border border-black/[0.03]">
+              BETA
+            </span>
+          </div>
+          
+          <div className="hidden md:flex items-center gap-4 text-[11px] text-[var(--color-ink-muted)] font-mono">
+            <span className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+              Local index ready
+            </span>
+            <span className="w-px h-3 bg-black/10"></span>
+            <span>{sessions.length} sessions</span>
+            <span className="w-px h-3 bg-black/10"></span>
+            <span>Sync 2m ago</span>
           </div>
         </div>
-        <div className="absolute left-1/2 -translate-x-1/2 text-[13px] font-medium text-zinc-500/80 tracking-wide">
-          Codex Workspace
-        </div>
-        <div className="flex items-center gap-3 text-[11px] text-zinc-400 font-mono">
-          <span className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
-            Local Engine Active
-          </span>
-        </div>
-      </div>
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex overflow-hidden relative">
-        <Sidebar 
-          currentView={currentView} 
-          onViewChange={setCurrentView} 
-          onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
-        />
-        
-        <SessionList 
-          sessions={filteredSessions} 
-          selectedId={selectedSessionId} 
-          onSelect={setSelectedSessionId} 
-        />
-        
-        <SessionDetail session={selectedSession} />
+        {/* Main Content Area */}
+        <div className="flex-1 flex overflow-hidden relative">
+          <Sidebar 
+            currentView={currentView} 
+            onViewChange={setCurrentView} 
+            onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
+          />
+          
+          <SessionList 
+            sessions={filteredSessions} 
+            selectedId={selectedSessionId} 
+            onSelect={setSelectedSessionId} 
+          />
+          
+          <SessionDetail session={selectedSession} />
+        </div>
       </div>
 
       <CommandPalette 
