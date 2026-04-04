@@ -39,7 +39,7 @@ export function SessionList({ sessions, selectedId, onSelect }: SessionListProps
     <div className="w-[340px] flex-shrink-0 border-r border-black/[0.06] bg-[var(--color-stone-panel)] flex flex-col h-full z-10 shadow-[-10px_0_20px_rgba(0,0,0,0.02)_inset]">
       {/* List Header */}
       <div className="h-12 flex items-center justify-between px-5 border-b border-black/[0.04] bg-[var(--color-stone-panel)]/80 backdrop-blur z-10 sticky top-0">
-        <span className="text-[11px] font-semibold text-[var(--color-ink-faint)] uppercase tracking-wider">{sessions.length} Sessions</span>
+        <span className="text-[11px] font-semibold text-[var(--color-ink-faint)] uppercase tracking-wider">{sessions.length} Dossiers</span>
         <button className="text-[11px] font-medium text-[var(--color-ink-muted)] hover:text-[var(--color-ink-main)] flex items-center gap-1.5 transition-colors">
           <Clock className="w-3.5 h-3.5" />
           Recent
@@ -66,17 +66,21 @@ export function SessionList({ sessions, selectedId, onSelect }: SessionListProps
                 <div className="absolute left-0 top-3 bottom-3 w-[3px] rounded-r-full bg-[var(--color-accent-cobalt)]" />
               )}
 
-              <div className="flex justify-between items-start mb-1.5">
-                <h3 className={cn(
-                  "text-[14px] font-semibold leading-snug line-clamp-1 pr-4 tracking-tight",
-                  isSelected ? "text-[var(--color-ink-main)]" : "text-[var(--color-ink-main)]/80 group-hover:text-[var(--color-ink-main)]"
-                )}>
-                  {session.title}
-                </h3>
+              <div className="flex justify-between items-start mb-1">
+                <div className="text-[9px] font-mono font-bold text-[var(--color-ink-faint)] tracking-widest uppercase">
+                  REF // {session.id.split('-')[0]}
+                </div>
                 {session.isStarred && (
-                  <Star className="w-3.5 h-3.5 text-[#D4AF37] fill-[#D4AF37] flex-shrink-0 mt-0.5 opacity-80" />
+                  <Star className="w-3.5 h-3.5 text-[#D4AF37] fill-[#D4AF37] flex-shrink-0 opacity-80" />
                 )}
               </div>
+
+              <h3 className={cn(
+                "text-[14px] font-semibold leading-snug line-clamp-1 pr-4 tracking-tight mb-1.5",
+                isSelected ? "text-[var(--color-ink-main)]" : "text-[var(--color-ink-main)]/80 group-hover:text-[var(--color-ink-main)]"
+              )}>
+                {session.title}
+              </h3>
 
               <div className={cn(
                 "text-[13px] line-clamp-2 mb-3 leading-relaxed transition-colors",
