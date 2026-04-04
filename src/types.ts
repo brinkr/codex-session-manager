@@ -14,9 +14,11 @@ export interface Session {
   firstPrompt: string;
   summary: string;
   updatedAt: string;
+  lastOpenedAt: string;
   projectPath: string;
   projectName: string;
   turnCount: number;
+  resumeCount: number;
   isStarred: boolean;
   isArchived: boolean;
   tags: string[];

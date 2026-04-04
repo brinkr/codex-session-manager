@@ -37,20 +37,23 @@ export function Sidebar({ currentView, onViewChange, onOpenCommandPalette }: Sid
       <button
         onClick={() => onViewChange(view)}
         className={cn(
-          "w-full flex items-center justify-between px-3 py-1.5 text-sm rounded-md transition-colors duration-150 group",
+          "w-full flex items-center justify-between px-3 py-1.5 text-[13px] rounded-lg transition-all duration-200 group relative outline-none",
           active 
-            ? "bg-blue-50 text-blue-700 font-medium" 
-            : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
+            ? "text-zinc-900 font-medium" 
+            : "text-zinc-500 hover:text-zinc-800 hover:bg-black/[0.03]"
         )}
       >
-        <div className="flex items-center gap-2.5">
-          <Icon className={cn("w-4 h-4", active ? "text-blue-600" : "text-zinc-400 group-hover:text-zinc-600")} />
+        {active && (
+          <div className="absolute inset-0 bg-white rounded-lg shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] border border-black/[0.02]" />
+        )}
+        <div className="flex items-center gap-2.5 relative z-10">
+          <Icon className={cn("w-4 h-4 transition-colors", active ? "text-[#2563EB]" : "text-zinc-400 group-hover:text-zinc-500")} />
           <span>{label}</span>
         </div>
         {badge !== undefined && (
           <span className={cn(
-            "text-xs px-1.5 py-0.5 rounded-full",
-            active ? "bg-blue-100 text-blue-700" : "text-zinc-400 group-hover:text-zinc-500"
+            "text-[11px] px-1.5 py-0.5 rounded-full relative z-10 transition-colors font-medium",
+            active ? "text-[#2563EB]" : "text-zinc-400 group-hover:text-zinc-500"
           )}>
             {badge}
           </span>
@@ -60,35 +63,26 @@ export function Sidebar({ currentView, onViewChange, onOpenCommandPalette }: Sid
   };
 
   return (
-    <div className="w-60 flex-shrink-0 bg-[#F9FAFB] border-r border-zinc-200 flex flex-col h-full">
-      {/* Workspace Header */}
-      <div className="h-12 flex items-center px-4 border-b border-zinc-200/50">
-        <div className="flex items-center gap-2 font-medium text-zinc-800">
-          <div className="w-5 h-5 rounded bg-zinc-800 flex items-center justify-center text-white text-xs">
-            C
-          </div>
-          Codex Workspace
-        </div>
-      </div>
-
+    <div className="w-64 flex-shrink-0 bg-transparent flex flex-col h-full border-r border-black/[0.06] z-20">
+      
       {/* Search / Command Trigger */}
-      <div className="p-3">
+      <div className="px-4 py-4">
         <button 
           onClick={onOpenCommandPalette}
-          className="w-full flex items-center justify-between px-3 py-1.5 bg-white border border-zinc-200 rounded-md text-sm text-zinc-400 hover:border-zinc-300 hover:text-zinc-600 transition-colors shadow-sm"
+          className="w-full flex items-center justify-between px-3 py-2 bg-black/[0.03] hover:bg-black/[0.05] border border-black/[0.04] rounded-xl text-[13px] text-zinc-500 transition-all shadow-sm outline-none focus:ring-2 focus:ring-[#2563EB]/20"
         >
           <div className="flex items-center gap-2">
-            <Search className="w-4 h-4" />
+            <Search className="w-4 h-4 text-zinc-400" />
             <span>Search...</span>
           </div>
-          <kbd className="text-[10px] font-sans px-1.5 py-0.5 bg-zinc-100 border border-zinc-200 rounded text-zinc-500">⌘K</kbd>
+          <kbd className="text-[10px] font-sans font-medium px-1.5 py-0.5 bg-white/60 border border-black/[0.05] rounded text-zinc-400 shadow-sm">⌘K</kbd>
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto py-2 px-3 space-y-6">
+      <div className="flex-1 overflow-y-auto px-3 space-y-6 pb-4 no-scrollbar">
         {/* Library */}
         <div>
-          <div className="px-3 mb-2 text-xs font-semibold text-zinc-400 tracking-wider uppercase">Library</div>
+          <div className="px-3 mb-1.5 text-[11px] font-semibold text-zinc-400/80 tracking-wider uppercase">Library</div>
           <div className="space-y-0.5">
             <NavItem icon={Inbox} label="All Sessions" view={{ type: 'all' }} badge={124} />
             <NavItem icon={Clock} label="Recent" view={{ type: 'all' }} />
@@ -99,7 +93,7 @@ export function Sidebar({ currentView, onViewChange, onOpenCommandPalette }: Sid
 
         {/* Scenarios (Tags) */}
         <div>
-          <div className="px-3 mb-2 text-xs font-semibold text-zinc-400 tracking-wider uppercase">Scenarios</div>
+          <div className="px-3 mb-1.5 text-[11px] font-semibold text-zinc-400/80 tracking-wider uppercase">Scenarios</div>
           <div className="space-y-0.5">
             <NavItem icon={Bug} label="Troubleshooting" view={{ type: 'tag', value: '故障排查' }} />
             <NavItem icon={Code} label="Architecture" view={{ type: 'tag', value: '架构设计' }} />
@@ -110,7 +104,7 @@ export function Sidebar({ currentView, onViewChange, onOpenCommandPalette }: Sid
 
         {/* Projects */}
         <div>
-          <div className="px-3 mb-2 text-xs font-semibold text-zinc-400 tracking-wider uppercase">Projects</div>
+          <div className="px-3 mb-1.5 text-[11px] font-semibold text-zinc-400/80 tracking-wider uppercase">Projects</div>
           <div className="space-y-0.5">
             <NavItem icon={FolderGit2} label="mobile-app" view={{ type: 'project', value: 'mobile-app' }} />
             <NavItem icon={FolderGit2} label="codex-manager" view={{ type: 'project', value: 'codex-manager' }} />
@@ -120,8 +114,8 @@ export function Sidebar({ currentView, onViewChange, onOpenCommandPalette }: Sid
       </div>
 
       {/* Footer */}
-      <div className="p-3 border-t border-zinc-200/50">
-        <button className="w-full flex items-center gap-2.5 px-3 py-1.5 text-sm text-zinc-500 hover:text-zinc-800 hover:bg-zinc-100 rounded-md transition-colors">
+      <div className="p-4 mt-auto">
+        <button className="w-full flex items-center gap-2.5 px-3 py-2 text-[13px] text-zinc-500 hover:text-zinc-800 hover:bg-black/[0.03] rounded-lg transition-colors outline-none">
           <Settings className="w-4 h-4" />
           <span>Settings</span>
         </button>

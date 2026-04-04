@@ -48,50 +48,50 @@ export function CommandPalette({ isOpen, onClose, sessions, onSelectSession }: C
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh] sm:pt-[20vh]">
+      <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh] sm:pt-[20vh]">
         {/* Backdrop */}
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.15 }}
+          transition={{ duration: 0.2 }}
           className="fixed inset-0 bg-zinc-900/20 backdrop-blur-sm"
           onClick={onClose}
         />
 
         {/* Palette */}
         <motion.div 
-          initial={{ opacity: 0, scale: 0.95, y: -10 }}
+          initial={{ opacity: 0, scale: 0.98, y: -10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: -10 }}
-          transition={{ duration: 0.15, ease: "easeOut" }}
-          className="relative w-full max-w-2xl bg-white rounded-xl shadow-2xl border border-zinc-200 overflow-hidden flex flex-col"
+          exit={{ opacity: 0, scale: 0.98, y: -10 }}
+          transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }} // smooth spring-like ease
+          className="relative w-full max-w-2xl bg-white/95 backdrop-blur-xl rounded-2xl shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1),0_0_0_1px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col"
         >
           {/* Search Input */}
-          <div className="flex items-center px-4 py-4 border-b border-zinc-100">
-            <Search className="w-5 h-5 text-zinc-400 mr-3" />
+          <div className="flex items-center px-5 py-4 border-b border-black/[0.06]">
+            <Search className="w-5 h-5 text-[#2563EB] mr-3" />
             <input 
               ref={inputRef}
               type="text" 
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search sessions, projects, or commands..." 
-              className="flex-1 bg-transparent border-none outline-none text-lg text-zinc-800 placeholder:text-zinc-400"
+              className="flex-1 bg-transparent border-none outline-none text-[17px] font-medium text-zinc-800 placeholder:text-zinc-400 placeholder:font-normal"
             />
-            <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-[10px] font-sans font-medium text-zinc-400 bg-zinc-100 rounded border border-zinc-200">
+            <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-[10px] font-sans font-medium text-zinc-400 bg-black/[0.03] rounded border border-black/[0.05]">
               ESC
             </kbd>
           </div>
 
           {/* Results Area */}
-          <div className="max-h-[60vh] overflow-y-auto p-2">
+          <div className="max-h-[60vh] overflow-y-auto p-2 no-scrollbar">
             {filteredSessions.length > 0 ? (
               <>
-                <div className="px-3 py-2 text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                <div className="px-4 py-2 mt-2 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
                   {query ? 'Search Results' : 'Recent Sessions'}
                 </div>
                 
-                <div className="space-y-1">
+                <div className="space-y-0.5">
                   {filteredSessions.slice(0, 6).map((session) => (
                     <button
                       key={session.id}
@@ -99,15 +99,15 @@ export function CommandPalette({ isOpen, onClose, sessions, onSelectSession }: C
                         onSelectSession(session.id);
                         onClose();
                       }}
-                      className="w-full flex items-center justify-between px-3 py-3 hover:bg-blue-50 rounded-lg group text-left transition-colors"
+                      className="w-full flex items-center justify-between px-4 py-3 hover:bg-[#2563EB]/[0.06] rounded-xl group text-left transition-colors outline-none focus:bg-[#2563EB]/[0.06]"
                     >
-                      <div className="flex items-center gap-3 overflow-hidden">
-                        <div className="w-8 h-8 rounded bg-zinc-100 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors">
-                          <Terminal className="w-4 h-4 text-zinc-500 group-hover:text-blue-600" />
+                      <div className="flex items-center gap-4 overflow-hidden">
+                        <div className="w-8 h-8 rounded-lg bg-black/[0.03] border border-black/[0.04] flex items-center justify-center flex-shrink-0 group-hover:bg-white group-hover:border-[#2563EB]/20 group-hover:shadow-sm transition-all">
+                          <Terminal className="w-4 h-4 text-zinc-500 group-hover:text-[#2563EB]" />
                         </div>
                         <div className="min-w-0">
-                          <div className="text-sm font-medium text-zinc-900 truncate">{session.title}</div>
-                          <div className="text-xs text-zinc-500 truncate flex items-center gap-2 mt-0.5">
+                          <div className="text-[14px] font-medium text-zinc-900 truncate">{session.title}</div>
+                          <div className="text-[12px] text-zinc-500 truncate flex items-center gap-2 mt-0.5">
                             <span className="flex items-center gap-1"><Folder className="w-3 h-3" /> {session.projectName}</span>
                             {session.tags.length > 0 && (
                               <>
@@ -119,7 +119,7 @@ export function CommandPalette({ isOpen, onClose, sessions, onSelectSession }: C
                         </div>
                       </div>
                       <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <span className="text-xs font-medium text-blue-600 flex items-center gap-1 bg-blue-100 px-2 py-1 rounded">
+                        <span className="text-[12px] font-medium text-[#2563EB] flex items-center gap-1 bg-[#2563EB]/10 px-2.5 py-1 rounded-md">
                           <Play className="w-3 h-3 fill-current" /> Resume
                         </span>
                         <span className="text-xs text-zinc-400">↵</span>
@@ -129,22 +129,22 @@ export function CommandPalette({ isOpen, onClose, sessions, onSelectSession }: C
                 </div>
               </>
             ) : (
-              <div className="py-8 text-center text-zinc-500 text-sm">
+              <div className="py-12 text-center text-zinc-500 text-[14px]">
                 No sessions found matching "{query}"
               </div>
             )}
 
             {!query && (
               <>
-                <div className="px-3 py-2 mt-4 text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                <div className="px-4 py-2 mt-4 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
                   Commands
                 </div>
-                <div className="space-y-1">
-                  <button className="w-full flex items-center gap-3 px-3 py-2 hover:bg-zinc-100 rounded-lg text-left transition-colors">
-                    <div className="w-8 h-8 rounded bg-zinc-50 border border-zinc-200 flex items-center justify-center flex-shrink-0">
+                <div className="space-y-0.5 mb-2">
+                  <button className="w-full flex items-center gap-4 px-4 py-3 hover:bg-black/[0.03] rounded-xl text-left transition-colors outline-none focus:bg-black/[0.03]">
+                    <div className="w-8 h-8 rounded-lg bg-black/[0.02] border border-black/[0.04] flex items-center justify-center flex-shrink-0">
                       <Terminal className="w-4 h-4 text-zinc-600" />
                     </div>
-                    <div className="text-sm font-medium text-zinc-900">Start New Session</div>
+                    <div className="text-[14px] font-medium text-zinc-900">Start New Session</div>
                   </button>
                 </div>
               </>

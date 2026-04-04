@@ -5,6 +5,7 @@ import { SessionDetail } from './components/SessionDetail';
 import { CommandPalette } from './components/CommandPalette';
 import { mockSessions } from './mockData';
 import { ViewState } from './types';
+import { motion } from 'motion/react';
 
 export default function App() {
   const [sessions] = useState(mockSessions);
@@ -12,30 +13,15 @@ export default function App() {
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(sessions[0]?.id || null);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
 
-  // Filter sessions based on current view
   const filteredSessions = useMemo(() => {
     let result = sessions;
-    
     switch (currentView.type) {
-      case 'starred':
-        result = result.filter(s => s.isStarred);
-        break;
-      case 'archived':
-        result = result.filter(s => s.isArchived);
-        break;
-      case 'tag':
-        result = result.filter(s => s.tags.includes(currentView.value));
-        break;
-      case 'project':
-        result = result.filter(s => s.projectName === currentView.value);
-        break;
-      case 'all':
-      default:
-        result = result.filter(s => !s.isArchived); // Hide archived by default in 'all'
-        break;
+      case 'starred': result = result.filter(s => s.isStarred); break;
+      case 'archived': result = result.filter(s => s.isArchived); break;
+      case 'tag': result = result.filter(s => s.tags.includes(currentView.value)); break;
+      case 'project': result = result.filter(s => s.projectName === currentView.value); break;
+      case 'all': default: result = result.filter(s => !s.isArchived); break;
     }
-    
-    // Sort by updatedAt descending
     return result.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
   }, [sessions, currentView]);
 
@@ -43,7 +29,6 @@ export default function App() {
     return sessions.find(s => s.id === selectedSessionId) || null;
   }, [sessions, selectedSessionId]);
 
-  // Global keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
@@ -56,32 +41,34 @@ export default function App() {
   }, []);
 
   return (
-    <div className="h-screen w-screen overflow-hidden flex flex-col bg-zinc-50 text-zinc-900 font-sans selection:bg-blue-200 selection:text-blue-900">
+    <div className="h-screen w-screen overflow-hidden flex flex-col bg-noise selection:bg-[#2563EB]/20 selection:text-[#2563EB]">
       
-      {/* Custom Titlebar Area (Mac-like) */}
-      <div className="h-10 w-full bg-zinc-100/80 backdrop-blur border-b border-zinc-200 flex items-center px-4 justify-between select-none z-50 relative">
+      {/* Mac Titlebar */}
+      <div className="h-11 w-full flex items-center px-4 justify-between select-none z-50 relative shrink-0">
         <div className="flex items-center gap-4">
-          {/* Mac window controls placeholder */}
-          <div className="flex items-center gap-2 w-16">
-            <div className="w-3 h-3 rounded-full bg-zinc-300"></div>
-            <div className="w-3 h-3 rounded-full bg-zinc-300"></div>
-            <div className="w-3 h-3 rounded-full bg-zinc-300"></div>
+          {/* Traffic Lights */}
+          <div className="flex items-center gap-2 w-16 group">
+            <div className="w-3 h-3 rounded-full bg-[#FF5F56] border border-black/10 shadow-sm"></div>
+            <div className="w-3 h-3 rounded-full bg-[#FFBD2E] border border-black/10 shadow-sm"></div>
+            <div className="w-3 h-3 rounded-full bg-[#27C93F] border border-black/10 shadow-sm"></div>
           </div>
-          <div className="text-xs font-medium text-zinc-500">Codex Session Manager</div>
         </div>
-        <div className="flex items-center gap-3 text-xs text-zinc-400">
-          <span>v1.0.0-beta</span>
+        <div className="absolute left-1/2 -translate-x-1/2 text-[13px] font-medium text-zinc-500/80 tracking-wide">
+          Codex Workspace
+        </div>
+        <div className="flex items-center gap-3 text-[11px] text-zinc-400 font-mono">
+          <span className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+            Local Engine Active
+          </span>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex overflow-hidden">
+      {/* Main Content Area */}
+      <div className="flex-1 flex overflow-hidden relative">
         <Sidebar 
           currentView={currentView} 
-          onViewChange={(view) => {
-            setCurrentView(view);
-            // Optionally clear selection or select first item in new view
-          }} 
+          onViewChange={setCurrentView} 
           onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
         />
         
@@ -94,15 +81,12 @@ export default function App() {
         <SessionDetail session={selectedSession} />
       </div>
 
-      {/* Command Palette Overlay */}
       <CommandPalette 
         isOpen={isCommandPaletteOpen} 
         onClose={() => setIsCommandPaletteOpen(false)} 
         sessions={sessions}
         onSelectSession={(id) => {
           setSelectedSessionId(id);
-          // If the session isn't in the current view, we might want to switch to 'all'
-          // For simplicity, we just switch to 'all' to ensure it's visible
           setCurrentView({ type: 'all' });
         }}
       />
