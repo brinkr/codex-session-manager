@@ -10,23 +10,24 @@ import { motion } from 'motion/react';
 export default function App() {
   const [sessions] = useState(mockSessions);
   const [currentView, setCurrentView] = useState<ViewState>({ type: 'all' });
-  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(sessions[0]?.id || null);
+  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(sessions[0]?.raw.sessionId || null);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
 
   const filteredSessions = useMemo(() => {
     let result = sessions;
     switch (currentView.type) {
-      case 'starred': result = result.filter(s => s.isStarred); break;
-      case 'archived': result = result.filter(s => s.isArchived); break;
-      case 'tag': result = result.filter(s => s.manualTags.includes(currentView.value) || s.autoTags.includes(currentView.value)); break;
-      case 'project': result = result.filter(s => s.projectName === currentView.value); break;
-      case 'all': default: result = result.filter(s => !s.isArchived); break;
+      case 'starred': result = result.filter(s => s.user.starred); break;
+      case 'archived': result = result.filter(s => s.user.archived); break;
+      case 'tag': result = result.filter(s => s.user.manualTags.includes(currentView.value!) || s.ai.tags.autoTags.includes(currentView.value!)); break;
+      case 'project': result = result.filter(s => s.raw.projectName === currentView.value); break;
+      case 'scenario': result = result.filter(s => s.ai.tags.scenarioClassification === currentView.value); break;
+      case 'all': default: result = result.filter(s => !s.user.archived); break;
     }
-    return result.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+    return result.sort((a, b) => new Date(b.raw.updatedAt).getTime() - new Date(a.raw.updatedAt).getTime());
   }, [sessions, currentView]);
 
   const selectedSession = useMemo(() => {
-    return sessions.find(s => s.id === selectedSessionId) || null;
+    return sessions.find(s => s.raw.sessionId === selectedSessionId) || null;
   }, [sessions, selectedSessionId]);
 
   useEffect(() => {

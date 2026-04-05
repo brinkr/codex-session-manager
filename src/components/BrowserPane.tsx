@@ -1,5 +1,5 @@
-import React from 'react';
-import { Session, ViewState } from '../types';
+import React, { useMemo } from 'react';
+import { SessionRecord, ViewState } from '../types';
 import { cn } from '../lib/utils';
 import { 
   Search, 
@@ -10,11 +10,12 @@ import {
   Tag,
   ChevronDown,
   Clock,
-  Sparkles
+  Sparkles,
+  MessageSquare
 } from 'lucide-react';
 
 interface BrowserPaneProps {
-  sessions: Session[];
+  sessions: SessionRecord[];
   currentView: ViewState;
   onViewChange: (view: ViewState) => void;
   selectedId: string | null;
@@ -31,9 +32,9 @@ export function BrowserPane({
   onOpenCommandPalette
 }: BrowserPaneProps) {
   
-  // Extract unique projects and tags
-  const projects = Array.from(new Set(sessions.map(s => s.projectName)));
-  const allTags = Array.from(new Set(sessions.flatMap(s => [...s.manualTags, ...s.autoTags])));
+  // Extract unique projects and scenarios
+  const projects = Array.from(new Set(sessions.map(s => s.raw.projectName)));
+  const scenarios = Array.from(new Set(sessions.map(s => s.ai.tags.scenarioClassification).filter(Boolean) as string[]));
 
   return (
     <div className="w-[320px] flex-shrink-0 bg-[var(--color-stone-panel)] flex flex-col h-full border-r border-black/[0.06] z-10 relative">
@@ -76,26 +77,26 @@ export function BrowserPane({
       {/* Middle: Groups (Collapsible in a real app, static here for prototype) */}
       <div className="flex-1 overflow-y-auto no-scrollbar flex flex-col">
         
-        {/* Scenarios / Tags */}
+        {/* Scenarios */}
         <div className="py-4 border-b border-black/[0.04]">
           <div className="px-4 flex items-center justify-between mb-2 group cursor-pointer">
             <span className="text-[10px] font-bold text-[var(--color-ink-faint)] uppercase tracking-wider">Scenarios</span>
             <ChevronDown className="w-3.5 h-3.5 text-[var(--color-ink-faint)] opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
           <div className="px-2 space-y-0.5">
-            {allTags.slice(0, 4).map(tag => (
+            {scenarios.slice(0, 4).map(scenario => (
               <button
-                key={tag}
-                onClick={() => onViewChange({ type: 'tag', value: tag })}
+                key={scenario}
+                onClick={() => onViewChange({ type: 'scenario', value: scenario as any })}
                 className={cn(
                   "w-full flex items-center gap-2.5 px-3 py-1.5 rounded-md text-[13px] font-medium transition-colors",
-                  currentView.type === 'tag' && currentView.value === tag
+                  currentView.type === 'scenario' && currentView.value === scenario
                     ? "bg-white text-[var(--color-ink-main)] shadow-sm border border-black/[0.04]"
                     : "text-[var(--color-ink-muted)] hover:text-[var(--color-ink-main)] hover:bg-black/[0.03] border border-transparent"
                 )}
               >
-                <Tag className="w-3.5 h-3.5 opacity-70" />
-                <span className="truncate">{tag}</span>
+                <Sparkles className="w-3.5 h-3.5 opacity-70" />
+                <span className="truncate capitalize">{scenario}</span>
               </button>
             ))}
           </div>
@@ -134,6 +135,7 @@ export function BrowserPane({
                currentView.type === 'starred' ? 'Starred' :
                currentView.type === 'archived' ? 'Archived' :
                currentView.type === 'tag' ? `#${currentView.value}` :
+               currentView.type === 'scenario' ? currentView.value :
                currentView.value}
             </span>
             <span className="text-[10px] font-mono text-[var(--color-ink-faint)]">{sessions.length}</span>
@@ -141,14 +143,14 @@ export function BrowserPane({
           
           <div className="flex-1 overflow-y-auto p-2 space-y-1 no-scrollbar">
             {sessions.map(session => {
-              const isSelected = session.id === selectedId;
-              const title = session.manualTitle || session.fallbackTitle;
-              const allSessionTags = [...session.manualTags, ...session.autoTags];
+              const isSelected = session.raw.sessionId === selectedId;
+              const title = session.user.manualTitle || session.ai.summary.aiTitle || session.derived.fallbackTitle;
+              const allSessionTags = [...session.user.manualTags, ...session.ai.tags.autoTags];
               
               return (
                 <button
-                  key={session.id}
-                  onClick={() => onSelect(session.id)}
+                  key={session.raw.sessionId}
+                  onClick={() => onSelect(session.raw.sessionId)}
                   className={cn(
                     "w-full text-left p-3 rounded-xl transition-all border outline-none",
                     isSelected 
@@ -158,7 +160,7 @@ export function BrowserPane({
                 >
                   <div className="flex items-start justify-between gap-2 mb-1.5">
                     <div className="flex items-center gap-2 min-w-0">
-                      {session.isStarred && <Star className="w-3.5 h-3.5 fill-[#D4AF37] text-[#D4AF37] flex-shrink-0" />}
+                      {session.user.starred && <Star className="w-3.5 h-3.5 fill-[#D4AF37] text-[#D4AF37] flex-shrink-0" />}
                       <span className={cn(
                         "text-[13px] font-semibold truncate",
                         isSelected ? "text-[var(--color-ink-main)]" : "text-[var(--color-ink-muted)]"
@@ -169,12 +171,12 @@ export function BrowserPane({
                   </div>
                   
                   <div className="text-[12px] text-[var(--color-ink-faint)] line-clamp-2 leading-relaxed mb-2.5">
-                    {session.firstPrompt}
+                    {session.derived.snippet}
                   </div>
                   
                   <div className="flex items-center justify-between text-[10px] font-mono text-[var(--color-ink-faint)]">
                     <div className="flex items-center gap-2 truncate">
-                      <span className="truncate">{session.projectName}</span>
+                      <span className="truncate">{session.raw.projectName}</span>
                       {allSessionTags.length > 0 && (
                         <>
                           <span className="w-1 h-1 rounded-full bg-black/10"></span>
@@ -182,7 +184,18 @@ export function BrowserPane({
                         </>
                       )}
                     </div>
-                    <span className="flex-shrink-0 ml-2">{new Date(session.updatedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <div className="flex items-center gap-1" title={`AI Summary: ${session.ai.summary.status}`}>
+                        <div className={cn(
+                          "w-1.5 h-1.5 rounded-full",
+                          session.ai.summary.status === 'completed' ? "bg-emerald-500" :
+                          session.ai.summary.status === 'generating' ? "bg-blue-500 animate-pulse" :
+                          session.ai.summary.status === 'failed' ? "bg-red-500" :
+                          "bg-black/10"
+                        )} />
+                      </div>
+                      <span className="ml-1">{new Date(session.raw.updatedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+                    </div>
                   </div>
                 </button>
               );

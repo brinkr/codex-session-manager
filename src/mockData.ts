@@ -1,203 +1,332 @@
-import { Session } from './types';
+import { SessionRecord } from './types';
 
-export const mockSessions: Session[] = [
+export const mockSessions: SessionRecord[] = [
   {
-    id: 'sess_1',
-    manualTitle: '修复 React Native 滑动误触问题',
-    fallbackTitle: '在 FlatList 中嵌套 ScrollView 时...',
-    firstPrompt: '在 FlatList 中嵌套 ScrollView 时，安卓端经常出现滑动误触，导致外层列表无法滚动，怎么解决？',
-    summaryStatus: 'completed',
-    summary: '分析了 RN 触摸事件分发机制，通过调整 nestedScrollEnabled 和 hitSlop 属性，并引入 PanResponder 拦截手势，最终解决了嵌套滚动冲突。',
-    autoTags: ['故障排查', 'React Native'],
-    manualTags: ['前端'],
-    updatedAt: '2026-04-04T10:15:00Z',
-    lastOpenedAt: '2026-04-04T10:20:00Z',
-    projectPath: '~/Workspace/mobile-app',
-    projectName: 'mobile-app',
-    turnCount: 8,
-    resumeCount: 3,
-    isStarred: true,
-    isArchived: false,
-    model: 'claude-3.5-sonnet',
-    branch: 'fix/scroll-conflict',
-    turns: [
-      {
-        id: 't1',
-        role: 'user',
-        content: '在 FlatList 中嵌套 ScrollView 时，安卓端经常出现滑动误触，导致外层列表无法滚动，怎么解决？',
-        timestamp: '10:05 AM'
+    raw: {
+      sessionId: 'sess-1',
+      sourcePath: '/Users/uhlan/.codex/sessions/sess-1.json',
+      cwd: '/Users/uhlan/projects/mobile-app',
+      projectPath: '/Users/uhlan/projects/mobile-app',
+      projectName: 'mobile-app',
+      branch: 'fix/scroll-bug',
+      model: 'gemini-3.1-pro-preview',
+      createdAt: '2026-04-05T09:00:00Z',
+      updatedAt: '2026-04-05T09:30:00Z',
+      turnCount: 12,
+      firstUserMessage: 'The scroll view in the React Native app is sometimes triggering a tap event when the user is just trying to scroll. How can we fix this?',
+      messages: [
+        { id: 'm1', role: 'user', content: 'The scroll view in the React Native app is sometimes triggering a tap event when the user is just trying to scroll. How can we fix this?', createdAt: '2026-04-05T09:00:00Z' },
+        { id: 'm2', role: 'assistant', content: 'This is a common issue in React Native. It usually happens when the `PanResponder` or touch handlers on child elements are too sensitive. We can fix this by adjusting the `delayPressIn` or using `onScrollBeginDrag` to cancel pending taps.', createdAt: '2026-04-05T09:01:00Z' },
+        { id: 'm3', role: 'tool', toolName: 'grep', content: 'Searching for ScrollView usages...', createdAt: '2026-04-05T09:01:30Z', toolStatus: 'completed' },
+        { id: 'm4', role: 'assistant', content: 'I found the `FeedList` component uses a `ScrollView` with `TouchableHighlight` children. Let\'s wrap the children in a component that better handles the touch cancellation.', createdAt: '2026-04-05T09:02:00Z' }
+      ]
+    },
+    derived: {
+      fallbackTitle: 'Fix React Native scroll view tap issue',
+      snippet: 'I found the FeedList component uses a ScrollView with TouchableHighlight children...',
+      basicKeywords: ['react-native', 'scroll', 'tap', 'bug'],
+      pathSegments: ['projects', 'mobile-app'],
+      hasToolCalls: true,
+      activityLevel: 'high'
+    },
+    ai: {
+      summary: {
+        status: 'completed',
+        aiTitle: '修复 React Native 滑动误触问题',
+        summary: 'Investigated and resolved an issue where scrolling a `ScrollView` in React Native would accidentally trigger tap events on child `TouchableHighlight` components.',
+        summaryBullets: [
+          'Identified `FeedList` as the problematic component.',
+          'Suggested adjusting `delayPressIn` or touch cancellation logic.',
+          'Implemented a wrapper to handle touch cancellation during scroll.'
+        ],
+        resumeRecommendation: 'Review the changes in `FeedList.tsx` and test on a physical device.',
+        generatedAt: '2026-04-05T09:31:00Z',
+        generator: 'local-model',
+        messageCountAtGeneration: 12
       },
-      {
-        id: 't2',
-        role: 'assistant',
-        content: '这是一个经典的 React Native 手势冲突问题。在 Android 上，内层的 `ScrollView` 默认会拦截所有的触摸事件。你可以尝试以下几个方案：\n\n1. 为内层 `ScrollView` 添加 `nestedScrollEnabled={true}` 属性。\n2. 如果是复杂的嵌套，可能需要使用 `react-native-gesture-handler` 替代原生的组件。',
-        timestamp: '10:05 AM'
+      tags: {
+        status: 'completed',
+        autoTags: ['react-native', 'bugfix', 'ui'],
+        scenarioClassification: 'frontend',
+        generatedAt: '2026-04-05T09:31:00Z'
       },
-      {
-        id: 't3',
-        role: 'user',
-        content: '加了 nestedScrollEnabled 还是不行，外层 FlatList 依然很难触发滚动。',
-        timestamp: '10:08 AM'
-      },
-      {
-        id: 't4',
-        role: 'tool',
-        toolName: 'search_codebase',
-        content: 'Searched for "FlatList" and "ScrollView" in ~/Workspace/mobile-app/src/components',
-        timestamp: '10:08 AM'
-      },
-      {
-        id: 't5',
-        role: 'assistant',
-        content: '我查看了你的代码，发现外层 `FlatList` 的 item 内部不仅有 `ScrollView`，还有 `TouchableOpacity`。这种多层嵌套会导致手势竞争。建议我们重写这一块的事件响应，使用 `PanResponder` 来手动判断滑动方向，如果是横向滑动则交给内层，纵向则交给外层。',
-        timestamp: '10:09 AM'
+      related: {
+        status: 'completed',
+        relatedSessionIds: ['sess-2'],
+        generatedAt: '2026-04-05T09:31:00Z'
       }
-    ]
+    },
+    user: {
+      manualTags: ['urgent'],
+      suppressedAutoTags: [],
+      starred: true,
+      archived: false,
+      pinned: false,
+      note: 'Need to verify this fix on Android as well, it was only tested on iOS.',
+      lastOpenedAt: '2026-04-05T10:00:00Z',
+      resumeCount: 2
+    }
   },
   {
-    id: 'sess_2',
-    fallbackTitle: '我想做一个本地的 Codex 会话管理器...',
-    firstPrompt: '我想做一个本地的 Codex 会话管理器，用什么技术栈比较好？要求跨平台、轻量、启动快。',
-    summaryStatus: 'none',
-    autoTags: [],
-    manualTags: ['架构设计'],
-    updatedAt: '2026-04-03T16:30:00Z',
-    lastOpenedAt: '2026-04-03T17:00:00Z',
-    projectPath: '~/Workspace/codex-manager',
-    projectName: 'codex-manager',
-    turnCount: 12,
-    resumeCount: 1,
-    isStarred: false,
-    isArchived: false,
-    model: 'gemini-3.1-pro-preview',
-    branch: 'main',
-    turns: [
-      {
-        id: 't1',
-        role: 'user',
-        content: '我想做一个本地的 Codex 会话管理器，用什么技术栈比较好？要求跨平台、轻量、启动快。',
-        timestamp: 'Apr 3, 4:00 PM'
+    raw: {
+      sessionId: 'sess-2',
+      sourcePath: '/Users/uhlan/.codex/sessions/sess-2.json',
+      cwd: '/Users/uhlan/projects/codex-core',
+      projectPath: '/Users/uhlan/projects/codex-core',
+      projectName: 'codex-core',
+      branch: 'feature/session-mgmt',
+      model: 'gemini-3.1-pro-preview',
+      createdAt: '2026-04-04T14:00:00Z',
+      updatedAt: '2026-04-04T16:00:00Z',
+      turnCount: 45,
+      firstUserMessage: 'We need to design a robust session management system for Codex. It needs to handle local file storage, AI summarization, and fast searching.',
+      messages: [
+        { id: 'm1', role: 'user', content: 'We need to design a robust session management system for Codex. It needs to handle local file storage, AI summarization, and fast searching.', createdAt: '2026-04-04T14:00:00Z' },
+        { id: 'm2', role: 'assistant', content: 'Let\'s break this down. For local storage, we can use a file-based approach with JSON or SQLite. For searching, a local index like lunr.js or a simple SQLite FTS would work.', createdAt: '2026-04-04T14:05:00Z' }
+      ]
+    },
+    derived: {
+      fallbackTitle: 'Design Codex session management',
+      snippet: 'Let\'s break this down. For local storage, we can use a file-based approach...',
+      basicKeywords: ['design', 'session', 'storage', 'search'],
+      pathSegments: ['projects', 'codex-core'],
+      hasToolCalls: false,
+      activityLevel: 'high'
+    },
+    ai: {
+      summary: {
+        status: 'generating'
       },
-      {
-        id: 't2',
-        role: 'assistant',
-        content: '针对“跨平台、轻量、启动快”这三个核心诉求，我推荐以下几个技术栈选项：\n\n1. **Tauri (Rust + Web前端)**：目前最符合“轻量、启动快”要求的跨平台框架。打包体积通常在几MB，内存占用极低。\n2. **Wails (Go + Web前端)**：如果你对 Go 更熟悉，这是一个很好的替代方案，性能和体积与 Tauri 相当。\n3. **Electron**：生态最成熟，但包体积大（通常 100MB+），内存占用较高，不符合“轻量”的要求。',
-        timestamp: 'Apr 3, 4:01 PM'
-      }
-    ]
-  },
-  {
-    id: 'sess_3',
-    manualTitle: '部署 cloudflare_temp_email',
-    fallbackTitle: '帮我写一个 Cloudflare Worker 脚本...',
-    firstPrompt: '帮我写一个 Cloudflare Worker 脚本，实现一个临时邮箱接收服务，将收到的邮件转发到我的 Telegram 机器人。',
-    summaryStatus: 'generating',
-    autoTags: [],
-    manualTags: ['部署运维', 'Cloudflare'],
-    updatedAt: '2026-04-02T09:12:00Z',
-    lastOpenedAt: '2026-04-02T10:00:00Z',
-    projectPath: '~/Projects/cf-temp-email',
-    projectName: 'cf-temp-email',
-    turnCount: 5,
-    resumeCount: 4,
-    isStarred: true,
-    isArchived: false,
-    model: 'gemini-3.1-pro-preview',
-    branch: 'feature/tg-bot',
-    turns: [
-      {
-        id: 't1',
-        role: 'user',
-        content: '帮我写一个 Cloudflare Worker 脚本，实现一个临时邮箱接收服务，将收到的邮件转发到我的 Telegram 机器人。',
-        timestamp: 'Apr 2, 9:00 AM'
+      tags: {
+        status: 'generating',
+        autoTags: []
       },
-      {
-        id: 't2',
-        role: 'assistant',
-        content: '好的，我们需要使用 Cloudflare Email Routing 的 `email` 事件。首先，你需要准备好 Telegram Bot Token 和你的 Chat ID。下面是 Worker 的核心代码...',
-        timestamp: 'Apr 2, 9:01 AM'
+      related: {
+        status: 'none',
+        relatedSessionIds: []
       }
-    ]
+    },
+    user: {
+      manualTitle: '调研 Codex 会话管理方案',
+      manualTags: ['architecture', 'planning'],
+      suppressedAutoTags: [],
+      starred: false,
+      archived: false,
+      pinned: true,
+      resumeCount: 5
+    }
   },
   {
-    id: 'sess_4',
-    fallbackTitle: '写一个 Python 脚本，遍历 ~/.codex 目录...',
-    firstPrompt: '写一个 Python 脚本，遍历 ~/.codex 目录下的所有 JSON 文件，提取其中的 prompt 和 response，并统计最常用的关键词。',
-    summaryStatus: 'failed',
-    autoTags: [],
-    manualTags: ['Python', '数据分析'],
-    updatedAt: '2026-04-01T21:45:00Z',
-    lastOpenedAt: '2026-04-01T22:00:00Z',
-    projectPath: '~/Scripts/ai-analytics',
-    projectName: 'ai-analytics',
-    turnCount: 4,
-    resumeCount: 0,
-    isStarred: false,
-    isArchived: false,
-    model: 'claude-3-opus',
-    branch: 'main',
-    turns: [
-      {
-        id: 't1',
-        role: 'user',
-        content: '写一个 Python 脚本，遍历 ~/.codex 目录下的所有 JSON 文件，提取其中的 prompt 和 response，并统计最常用的关键词。',
-        timestamp: 'Apr 1, 9:30 PM'
+    raw: {
+      sessionId: 'sess-3',
+      sourcePath: '/Users/uhlan/.codex/sessions/sess-3.json',
+      cwd: '/Users/uhlan/infra/email-service',
+      projectPath: '/Users/uhlan/infra/email-service',
+      projectName: 'email-service',
+      createdAt: '2026-04-03T10:00:00Z',
+      updatedAt: '2026-04-03T11:00:00Z',
+      turnCount: 8,
+      firstUserMessage: 'Help me deploy a temporary email service using Cloudflare Workers.',
+      messages: [
+        { id: 'm1', role: 'user', content: 'Help me deploy a temporary email service using Cloudflare Workers.', createdAt: '2026-04-03T10:00:00Z' },
+        { id: 'm2', role: 'assistant', content: 'Sure, we can use Cloudflare Email Routing and a Worker to process incoming emails and store them temporarily in Workers KV.', createdAt: '2026-04-03T10:02:00Z' }
+      ]
+    },
+    derived: {
+      fallbackTitle: 'Deploy temp email on Cloudflare',
+      snippet: 'Sure, we can use Cloudflare Email Routing and a Worker to process incoming emails...',
+      basicKeywords: ['cloudflare', 'email', 'worker', 'deploy'],
+      pathSegments: ['infra', 'email-service'],
+      hasToolCalls: false,
+      activityLevel: 'medium'
+    },
+    ai: {
+      summary: {
+        status: 'failed',
+        errorMessage: 'Context length exceeded during summarization.'
+      },
+      tags: {
+        status: 'completed',
+        autoTags: ['cloudflare', 'serverless'],
+        scenarioClassification: 'devops',
+        generatedAt: '2026-04-03T11:05:00Z'
+      },
+      related: {
+        status: 'none',
+        relatedSessionIds: []
       }
-    ]
+    },
+    user: {
+      manualTitle: '部署 cloudflare_temp_email',
+      manualTags: [],
+      suppressedAutoTags: [],
+      starred: false,
+      archived: true,
+      pinned: false,
+      resumeCount: 1
+    }
   },
   {
-    id: 'sess_5',
-    manualTitle: '排查 mac mini 磁盘空间告急',
-    fallbackTitle: '我的 Mac Mini 磁盘空间突然只剩 5GB 了...',
-    firstPrompt: '我的 Mac Mini 磁盘空间突然只剩 5GB 了，有什么命令行工具可以快速找出占用空间最大的大文件和隐藏目录？',
-    summaryStatus: 'completed',
-    summary: '使用 ncdu 和 find 命令定位到了 Docker 遗留的悬空镜像和 Xcode 缓存，清理后释放了 80GB 空间。编写了定期清理脚本。',
-    autoTags: ['故障排查', 'macOS'],
-    manualTags: [],
-    updatedAt: '2026-03-28T14:20:00Z',
-    lastOpenedAt: '2026-03-28T15:00:00Z',
-    projectPath: '~/',
-    projectName: 'system-ops',
-    turnCount: 6,
-    resumeCount: 1,
-    isStarred: false,
-    isArchived: true,
-    model: 'gemini-3.1-flash-preview',
-    branch: '-',
-    turns: [
-      {
-        id: 't1',
-        role: 'user',
-        content: '我的 Mac Mini 磁盘空间突然只剩 5GB 了，有什么命令行工具可以快速找出占用空间最大的大文件和隐藏目录？',
-        timestamp: 'Mar 28, 2:00 PM'
+    raw: {
+      sessionId: 'sess-4',
+      sourcePath: '/Users/uhlan/.codex/sessions/sess-4.json',
+      cwd: '/Users/uhlan/scripts/history-analyzer',
+      projectPath: '/Users/uhlan/scripts/history-analyzer',
+      projectName: 'history-analyzer',
+      createdAt: '2026-04-02T16:00:00Z',
+      updatedAt: '2026-04-02T17:30:00Z',
+      turnCount: 22,
+      firstUserMessage: 'I want to write a script to analyze my past chat history from .codex and .claude folders to find common patterns.',
+      messages: [
+        { id: 'm1', role: 'user', content: 'I want to write a script to analyze my past chat history from .codex and .claude folders to find common patterns.', createdAt: '2026-04-02T16:00:00Z' }
+      ]
+    },
+    derived: {
+      fallbackTitle: 'Analyze chat history scripts',
+      snippet: 'I want to write a script to analyze my past chat history from .codex and .claude folders...',
+      basicKeywords: ['script', 'analyze', 'history', 'codex', 'claude'],
+      pathSegments: ['scripts', 'history-analyzer'],
+      hasToolCalls: true,
+      activityLevel: 'medium'
+    },
+    ai: {
+      summary: {
+        status: 'none'
+      },
+      tags: {
+        status: 'none',
+        autoTags: []
+      },
+      related: {
+        status: 'none',
+        relatedSessionIds: []
       }
-    ]
+    },
+    user: {
+      manualTitle: '分析 .codex / .claude 历史会话',
+      manualTags: ['scripting', 'data-analysis'],
+      suppressedAutoTags: [],
+      starred: false,
+      archived: false,
+      pinned: false,
+      resumeCount: 0
+    }
   },
   {
-    id: 'sess_6',
-    fallbackTitle: '我们团队现在用了 OpenAI, Anthropic 和 Gemini...',
-    firstPrompt: '我们团队现在用了 OpenAI, Anthropic 和 Gemini 的 API，每个 SDK 都不一样，我想在后端做一层统一的网关，有什么开源方案推荐，或者自己写的架构建议？',
-    summaryStatus: 'completed',
-    summary: '评估了 LiteLLM 和 OneAPI。最终决定基于 LiteLLM 搭建内部网关，统一了请求格式，并增加了基于 Redis 的速率限制和成本统计中间件。',
-    autoTags: ['架构设计', 'API'],
-    manualTags: ['后端'],
-    updatedAt: '2026-03-25T11:05:00Z',
-    lastOpenedAt: '2026-03-26T09:00:00Z',
-    projectPath: '~/Workspace/ai-gateway',
-    projectName: 'ai-gateway',
-    turnCount: 15,
-    resumeCount: 8,
-    isStarred: true,
-    isArchived: false,
-    model: 'gemini-3.1-pro-preview',
-    branch: 'feat/litellm-integration',
-    turns: [
-      {
-        id: 't1',
-        role: 'user',
-        content: '我们团队现在用了 OpenAI, Anthropic 和 Gemini 的 API，每个 SDK 都不一样，我想在后端做一层统一的网关，有什么开源方案推荐，或者自己写的架构建议？',
-        timestamp: 'Mar 25, 10:00 AM'
+    raw: {
+      sessionId: 'sess-5',
+      sourcePath: '/Users/uhlan/.codex/sessions/sess-5.json',
+      cwd: '/Users/uhlan',
+      projectPath: '/Users/uhlan',
+      projectName: 'system',
+      createdAt: '2026-04-01T08:00:00Z',
+      updatedAt: '2026-04-01T09:15:00Z',
+      turnCount: 15,
+      firstUserMessage: 'My mac mini is running out of disk space. Help me find what is taking up so much room.',
+      messages: [
+        { id: 'm1', role: 'user', content: 'My mac mini is running out of disk space. Help me find what is taking up so much room.', createdAt: '2026-04-01T08:00:00Z' },
+        { id: 'm2', role: 'tool', toolName: 'shell', content: 'Running `du -sh * | sort -hr`...', createdAt: '2026-04-01T08:01:00Z', toolStatus: 'completed' },
+        { id: 'm3', role: 'assistant', content: 'It looks like Docker images and some old Xcode caches are taking up over 100GB. We can clean these up.', createdAt: '2026-04-01T08:02:00Z' }
+      ]
+    },
+    derived: {
+      fallbackTitle: 'Mac mini disk space issue',
+      snippet: 'It looks like Docker images and some old Xcode caches are taking up over 100GB...',
+      basicKeywords: ['mac', 'disk', 'space', 'cleanup'],
+      pathSegments: ['system'],
+      hasToolCalls: true,
+      activityLevel: 'low'
+    },
+    ai: {
+      summary: {
+        status: 'completed',
+        aiTitle: '排查 mac mini 磁盘空间告急',
+        summary: 'Identified and cleaned up large files consuming disk space on the Mac Mini.',
+        summaryBullets: [
+          'Used `du` to find large directories.',
+          'Cleared Docker image cache.',
+          'Removed old Xcode derived data.'
+        ],
+        generatedAt: '2026-04-01T08:30:00Z',
+        generator: 'local-model',
+        messageCountAtGeneration: 10 // Stale! turnCount is 15
+      },
+      tags: {
+        status: 'completed',
+        autoTags: ['macos', 'maintenance', 'docker'],
+        scenarioClassification: 'troubleshooting',
+        generatedAt: '2026-04-01T08:30:00Z'
+      },
+      related: {
+        status: 'none',
+        relatedSessionIds: []
       }
-    ]
+    },
+    user: {
+      manualTags: [],
+      suppressedAutoTags: [],
+      starred: false,
+      archived: false,
+      pinned: false,
+      resumeCount: 1
+    }
+  },
+  {
+    raw: {
+      sessionId: 'sess-6',
+      sourcePath: '/Users/uhlan/.codex/sessions/sess-6.json',
+      cwd: '/Users/uhlan/projects/api-gateway',
+      projectPath: '/Users/uhlan/projects/api-gateway',
+      projectName: 'api-gateway',
+      createdAt: '2026-03-28T11:00:00Z',
+      updatedAt: '2026-03-29T14:00:00Z',
+      turnCount: 56,
+      firstUserMessage: 'We need to unify how we access different AI APIs (OpenAI, Anthropic, Gemini) into a single internal gateway.',
+      messages: [
+        { id: 'm1', role: 'user', content: 'We need to unify how we access different AI APIs (OpenAI, Anthropic, Gemini) into a single internal gateway.', createdAt: '2026-03-28T11:00:00Z' }
+      ]
+    },
+    derived: {
+      fallbackTitle: 'Unify AI API access',
+      snippet: 'We need to unify how we access different AI APIs (OpenAI, Anthropic, Gemini)...',
+      basicKeywords: ['api', 'gateway', 'ai', 'unify'],
+      pathSegments: ['projects', 'api-gateway'],
+      hasToolCalls: false,
+      activityLevel: 'high'
+    },
+    ai: {
+      summary: {
+        status: 'completed',
+        aiTitle: '统一 AI API 网关接入方案',
+        summary: 'Designed an internal API gateway to standardize requests to various LLM providers.',
+        summaryBullets: [
+          'Defined a common request/response schema.',
+          'Implemented rate limiting and cost tracking per provider.',
+          'Added fallback logic for high-availability.'
+        ],
+        generatedAt: '2026-03-29T14:05:00Z',
+        generator: 'company-gateway',
+        messageCountAtGeneration: 56
+      },
+      tags: {
+        status: 'completed',
+        autoTags: ['api-design', 'backend', 'llm'],
+        scenarioClassification: 'architecture',
+        generatedAt: '2026-03-29T14:05:00Z'
+      },
+      related: {
+        status: 'none',
+        relatedSessionIds: []
+      }
+    },
+    user: {
+      manualTitle: '统一 AI API 网关接入方案',
+      manualTags: ['important'],
+      suppressedAutoTags: [],
+      starred: true,
+      archived: false,
+      pinned: false,
+      resumeCount: 8
+    }
   }
 ];

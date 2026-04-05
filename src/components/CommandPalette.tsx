@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Search, Terminal, Folder, Tag, Play } from 'lucide-react';
-import { Session } from '../types';
+import { SessionRecord } from '../types';
 
 interface CommandPaletteProps {
   isOpen: boolean;
   onClose: () => void;
-  sessions: Session[];
+  sessions: SessionRecord[];
   onSelectSession: (id: string) => void;
 }
 
@@ -40,9 +40,9 @@ export function CommandPalette({ isOpen, onClose, sessions, onSelectSession }: C
   }, [isOpen]);
 
   const filteredSessions = sessions.filter(s => {
-    const title = s.manualTitle || s.fallbackTitle;
-    const allTags = [...s.manualTags, ...s.autoTags];
-    const searchStr = `${title} ${s.projectName} ${allTags.join(' ')}`.toLowerCase();
+    const title = s.user.manualTitle || s.ai.summary.aiTitle || s.derived.fallbackTitle;
+    const allTags = [...s.user.manualTags, ...s.ai.tags.autoTags];
+    const searchStr = `${title} ${s.raw.projectName} ${allTags.join(' ')}`.toLowerCase();
     return searchStr.includes(query.toLowerCase());
   });
 
@@ -95,13 +95,13 @@ export function CommandPalette({ isOpen, onClose, sessions, onSelectSession }: C
                 
                 <div className="space-y-0.5">
                   {filteredSessions.slice(0, 6).map((session) => {
-                    const title = session.manualTitle || session.fallbackTitle;
-                    const allTags = [...session.manualTags, ...session.autoTags];
+                    const title = session.user.manualTitle || session.ai.summary.aiTitle || session.derived.fallbackTitle;
+                    const allTags = [...session.user.manualTags, ...session.ai.tags.autoTags];
                     return (
                     <button
-                      key={session.id}
+                      key={session.raw.sessionId}
                       onClick={() => {
-                        onSelectSession(session.id);
+                        onSelectSession(session.raw.sessionId);
                         onClose();
                       }}
                       className="w-full flex items-center justify-between px-4 py-3 hover:bg-[var(--color-accent-cobalt)]/[0.06] rounded-xl group text-left transition-colors outline-none focus:bg-[var(--color-accent-cobalt)]/[0.06]"
@@ -113,7 +113,7 @@ export function CommandPalette({ isOpen, onClose, sessions, onSelectSession }: C
                         <div className="min-w-0">
                           <div className="text-[14px] font-medium text-[var(--color-ink-main)] truncate">{title}</div>
                           <div className="text-[12px] text-[var(--color-ink-muted)] truncate flex items-center gap-2 mt-0.5">
-                            <span className="flex items-center gap-1"><Folder className="w-3 h-3" /> {session.projectName}</span>
+                            <span className="flex items-center gap-1"><Folder className="w-3 h-3" /> {session.raw.projectName}</span>
                             {allTags.length > 0 && (
                               <>
                                 <span>•</span>
