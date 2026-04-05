@@ -12,7 +12,8 @@ import {
   CheckCircle2,
   AlertCircle,
   Loader2,
-  Play
+  Play,
+  User
 } from 'lucide-react';
 
 interface DocumentPaneProps {
@@ -32,6 +33,8 @@ export function DocumentPane({ session }: DocumentPaneProps) {
   }
 
   const title = session.user.manualTitle || session.ai.summary.aiTitle || session.derived.fallbackTitle;
+  const titleSource = session.user.manualTitle ? 'manual' : session.ai.summary.aiTitle ? 'ai' : 'fallback';
+  
   const isSummaryStale = session.ai.summary.status === 'completed' && 
     (session.ai.summary.messageCountAtGeneration !== undefined && session.raw.turnCount > session.ai.summary.messageCountAtGeneration);
 
@@ -49,9 +52,21 @@ export function DocumentPane({ session }: DocumentPaneProps) {
           
           <div className="px-12 py-16 max-w-[860px] mx-auto w-full">
             {/* Document Title */}
-            <h1 className="text-[28px] font-bold text-[var(--color-ink-main)] leading-[1.3] tracking-tight mb-6">
-              {title}
-            </h1>
+            <div className="mb-6 flex items-start gap-3">
+              <h1 className="text-[28px] font-bold text-[var(--color-ink-main)] leading-[1.3] tracking-tight">
+                {title}
+              </h1>
+              {titleSource === 'manual' && (
+                <div className="mt-2 flex items-center justify-center w-5 h-5 rounded-full bg-black/[0.04] border border-black/[0.05]" title="Manually titled">
+                  <User className="w-3 h-3 text-[var(--color-ink-muted)]" />
+                </div>
+              )}
+              {titleSource === 'ai' && (
+                <div className="mt-2 flex items-center justify-center w-5 h-5 rounded-full bg-[var(--color-accent-cobalt)]/10 border border-[var(--color-accent-cobalt)]/20" title="AI generated title">
+                  <Sparkles className="w-3 h-3 text-[var(--color-accent-cobalt)]" />
+                </div>
+              )}
+            </div>
 
             {/* Document Meta Band */}
             <div className="flex flex-col gap-4 mb-12 pb-8 border-b border-black/[0.06]">

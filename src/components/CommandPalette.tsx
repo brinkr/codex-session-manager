@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, Terminal, Folder, Tag, Play } from 'lucide-react';
+import { Search, Terminal, Folder, Tag, Play, Settings } from 'lucide-react';
 import { SessionRecord } from '../types';
 
 interface CommandPaletteProps {
@@ -8,9 +8,10 @@ interface CommandPaletteProps {
   onClose: () => void;
   sessions: SessionRecord[];
   onSelectSession: (id: string) => void;
+  onOpenSettings?: () => void;
 }
 
-export function CommandPalette({ isOpen, onClose, sessions, onSelectSession }: CommandPaletteProps) {
+export function CommandPalette({ isOpen, onClose, sessions, onSelectSession, onOpenSettings }: CommandPaletteProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState('');
 
@@ -45,6 +46,8 @@ export function CommandPalette({ isOpen, onClose, sessions, onSelectSession }: C
     const searchStr = `${title} ${s.raw.projectName} ${allTags.join(' ')}`.toLowerCase();
     return searchStr.includes(query.toLowerCase());
   });
+
+  const showSettingsCommand = query.toLowerCase() === 'settings' || query.toLowerCase() === 'preferences';
 
   if (!isOpen) return null;
 
@@ -87,6 +90,23 @@ export function CommandPalette({ isOpen, onClose, sessions, onSelectSession }: C
 
           {/* Results Area */}
           <div className="max-h-[60vh] overflow-y-auto p-2 no-scrollbar">
+            {showSettingsCommand && (
+               <div className="space-y-0.5 mb-2">
+                 <button 
+                   onClick={() => {
+                     onClose();
+                     onOpenSettings?.();
+                   }}
+                   className="w-full flex items-center gap-4 px-4 py-3 hover:bg-[var(--color-accent-cobalt)]/[0.06] rounded-xl text-left transition-colors outline-none focus:bg-[var(--color-accent-cobalt)]/[0.06]"
+                 >
+                   <div className="w-8 h-8 rounded-lg bg-black/[0.02] border border-black/[0.04] flex items-center justify-center flex-shrink-0">
+                     <Settings className="w-4 h-4 text-[var(--color-accent-cobalt)]" />
+                   </div>
+                   <div className="text-[14px] font-medium text-[var(--color-ink-main)]">Open Settings</div>
+                 </button>
+               </div>
+            )}
+
             {filteredSessions.length > 0 ? (
               <>
                 <div className="px-4 py-2 mt-2 text-[11px] font-semibold text-[var(--color-ink-faint)] uppercase tracking-wider">
@@ -134,9 +154,11 @@ export function CommandPalette({ isOpen, onClose, sessions, onSelectSession }: C
                 </div>
               </>
             ) : (
-              <div className="py-12 text-center text-[var(--color-ink-muted)] text-[14px]">
-                No sessions found matching "{query}"
-              </div>
+              !showSettingsCommand && (
+                <div className="py-12 text-center text-[var(--color-ink-muted)] text-[14px]">
+                  No sessions found matching "{query}"
+                </div>
+              )
             )}
 
             {!query && (
@@ -150,6 +172,18 @@ export function CommandPalette({ isOpen, onClose, sessions, onSelectSession }: C
                       <Terminal className="w-4 h-4 text-[var(--color-ink-muted)]" />
                     </div>
                     <div className="text-[14px] font-medium text-[var(--color-ink-main)]">Start New Session</div>
+                  </button>
+                  <button 
+                    onClick={() => {
+                      onClose();
+                      onOpenSettings?.();
+                    }}
+                    className="w-full flex items-center gap-4 px-4 py-3 hover:bg-black/[0.03] rounded-xl text-left transition-colors outline-none focus:bg-black/[0.03]"
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-black/[0.02] border border-black/[0.04] flex items-center justify-center flex-shrink-0">
+                      <Settings className="w-4 h-4 text-[var(--color-ink-muted)]" />
+                    </div>
+                    <div className="text-[14px] font-medium text-[var(--color-ink-main)]">Open Settings</div>
                   </button>
                 </div>
               </>

@@ -12,14 +12,16 @@ import {
   Clock,
   RotateCcw,
   Activity,
-  FileText
+  FileText,
+  Settings
 } from 'lucide-react';
 
 interface InspectorProps {
   session: SessionRecord | null;
+  onOpenSettings?: () => void;
 }
 
-export function Inspector({ session }: InspectorProps) {
+export function Inspector({ session, onOpenSettings }: InspectorProps) {
   if (!session) {
     return (
       <div className="w-[280px] flex-shrink-0 border-l border-black/[0.06] bg-[var(--color-stone-panel)]/40 flex flex-col h-full z-10">
@@ -37,12 +39,13 @@ export function Inspector({ session }: InspectorProps) {
           <Play className="w-4 h-4 fill-current" />
           Resume Session
         </button>
-        <div className="grid grid-cols-2 gap-2">
-          <button className="flex items-center justify-center gap-1.5 bg-white border border-black/[0.08] hover:bg-black/[0.02] text-[var(--color-ink-main)] px-3 py-2 rounded-lg text-[11px] font-medium transition-all shadow-sm">
+        <div className="flex items-center justify-center gap-4">
+          <button className="flex items-center gap-1.5 text-[var(--color-ink-muted)] hover:text-[var(--color-ink-main)] text-[11px] font-medium transition-colors">
             <Terminal className="w-3.5 h-3.5" />
             Terminal
           </button>
-          <button className="flex items-center justify-center gap-1.5 bg-white border border-black/[0.08] hover:bg-black/[0.02] text-[var(--color-ink-main)] px-3 py-2 rounded-lg text-[11px] font-medium transition-all shadow-sm">
+          <div className="w-px h-3 bg-black/[0.08]" />
+          <button className="flex items-center gap-1.5 text-[var(--color-ink-muted)] hover:text-[var(--color-ink-main)] text-[11px] font-medium transition-colors">
             <Copy className="w-3.5 h-3.5" />
             Copy Cmd
           </button>
@@ -74,7 +77,16 @@ export function Inspector({ session }: InspectorProps) {
 
       {/* AI Augmentation Status */}
       <div className="p-5 border-b border-black/[0.04]">
-        <div className="text-[10px] font-bold text-[var(--color-ink-faint)] uppercase tracking-wider mb-3">AI Augmentation</div>
+        <div className="flex items-center justify-between mb-3">
+          <div className="text-[10px] font-bold text-[var(--color-ink-faint)] uppercase tracking-wider">AI Augmentation</div>
+          <button 
+            onClick={onOpenSettings}
+            className="text-[var(--color-ink-faint)] hover:text-[var(--color-ink-main)] transition-colors"
+            title="AI Settings"
+          >
+            <Settings className="w-3.5 h-3.5" />
+          </button>
+        </div>
         
         <div className="space-y-4">
           <div>

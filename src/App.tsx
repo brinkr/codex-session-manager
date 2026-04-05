@@ -3,6 +3,7 @@ import { BrowserPane } from './components/BrowserPane';
 import { DocumentPane } from './components/DocumentPane';
 import { Inspector } from './components/Inspector';
 import { CommandPalette } from './components/CommandPalette';
+import { SettingsModal } from './components/SettingsModal';
 import { mockSessions } from './mockData';
 import { ViewState } from './types';
 import { motion } from 'motion/react';
@@ -12,6 +13,20 @@ export default function App() {
   const [currentView, setCurrentView] = useState<ViewState>({ type: 'all' });
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(sessions[0]?.raw.sessionId || null);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system');
+
+  useEffect(() => {
+    const root = window.document.documentElement;
+    root.classList.remove('light', 'dark');
+
+    if (theme === 'system') {
+      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      root.classList.add(systemTheme);
+    } else {
+      root.classList.add(theme);
+    }
+  }, [theme]);
 
   const filteredSessions = useMemo(() => {
     let result = sessions;
@@ -35,6 +50,10 @@ export default function App() {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         setIsCommandPaletteOpen(true);
+      }
+      if (e.key === ',' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setIsSettingsOpen(true);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -88,11 +107,12 @@ export default function App() {
             selectedId={selectedSessionId}
             onSelect={setSelectedSessionId}
             onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
+            onOpenSettings={() => setIsSettingsOpen(true)}
           />
           
           <DocumentPane session={selectedSession} />
           
-          <Inspector session={selectedSession} />
+          <Inspector session={selectedSession} onOpenSettings={() => setIsSettingsOpen(true)} />
         </div>
       </div>
 
@@ -104,6 +124,14 @@ export default function App() {
           setSelectedSessionId(id);
           setCurrentView({ type: 'all' });
         }}
+        onOpenSettings={() => setIsSettingsOpen(true)}
+      />
+
+      <SettingsModal 
+        isOpen={isSettingsOpen} 
+        onClose={() => setIsSettingsOpen(false)} 
+        theme={theme}
+        setTheme={setTheme}
       />
     </div>
   );
