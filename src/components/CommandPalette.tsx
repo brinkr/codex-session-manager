@@ -20,9 +20,6 @@ export function CommandPalette({ isOpen, onClose, sessions, onSelectSession, onO
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         if (isOpen) onClose();
-        else {
-          // Open logic is handled in App.tsx
-        }
       }
       if (e.key === 'Escape' && isOpen) {
         onClose();
@@ -70,20 +67,20 @@ export function CommandPalette({ isOpen, onClose, sessions, onSelectSession, onO
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.98, y: -10 }}
           transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }} // smooth spring-like ease
-          className="relative w-full max-w-2xl bg-[var(--color-stone-paper)]/95 backdrop-blur-xl rounded-2xl shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1),0_0_0_1px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col"
+          className="relative w-full max-w-2xl bg-[var(--color-bg-doc)]/95 backdrop-blur-xl rounded-2xl shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1),0_0_0_1px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col border border-[var(--color-border-subtle)]"
         >
           {/* Search Input */}
-          <div className="flex items-center px-5 py-4 border-b border-black/[0.06]">
-            <Search className="w-5 h-5 text-[var(--color-accent-cobalt)] mr-3" />
+          <div className="flex items-center px-5 py-4 border-b border-[var(--color-border-subtle)]">
+            <Search className="w-5 h-5 text-[var(--color-accent-main)] mr-3" />
             <input 
               ref={inputRef}
               type="text" 
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search sessions, projects, or commands..." 
-              className="flex-1 bg-transparent border-none outline-none text-[17px] font-medium text-[var(--color-ink-main)] placeholder:text-[var(--color-ink-faint)] placeholder:font-normal"
+              className="flex-1 bg-transparent border-none outline-none text-[17px] font-medium text-[var(--color-text-main)] placeholder:text-[var(--color-text-faint)] placeholder:font-normal"
             />
-            <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-[10px] font-sans font-medium text-[var(--color-ink-faint)] bg-black/[0.03] rounded border border-black/[0.05]">
+            <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-[10px] font-sans font-medium text-[var(--color-text-faint)] bg-[var(--color-bg-hover)] rounded border border-[var(--color-border-subtle)]">
               ESC
             </kbd>
           </div>
@@ -97,19 +94,19 @@ export function CommandPalette({ isOpen, onClose, sessions, onSelectSession, onO
                      onClose();
                      onOpenSettings?.();
                    }}
-                   className="w-full flex items-center gap-4 px-4 py-3 hover:bg-[var(--color-accent-cobalt)]/[0.06] rounded-xl text-left transition-colors outline-none focus:bg-[var(--color-accent-cobalt)]/[0.06]"
+                   className="w-full flex items-center gap-4 px-4 py-3 hover:bg-[var(--color-accent-subtle)] rounded-xl text-left transition-colors outline-none focus:bg-[var(--color-accent-subtle)]"
                  >
-                   <div className="w-8 h-8 rounded-lg bg-black/[0.02] border border-black/[0.04] flex items-center justify-center flex-shrink-0">
-                     <Settings className="w-4 h-4 text-[var(--color-accent-cobalt)]" />
+                   <div className="w-8 h-8 rounded-lg bg-[var(--color-bg-raised)] border border-[var(--color-border-subtle)] flex items-center justify-center flex-shrink-0">
+                     <Settings className="w-4 h-4 text-[var(--color-accent-main)]" />
                    </div>
-                   <div className="text-[14px] font-medium text-[var(--color-ink-main)]">Open Settings</div>
+                   <div className="text-[14px] font-medium text-[var(--color-text-main)]">Open Settings</div>
                  </button>
                </div>
             )}
 
             {filteredSessions.length > 0 ? (
               <>
-                <div className="px-4 py-2 mt-2 text-[11px] font-semibold text-[var(--color-ink-faint)] uppercase tracking-wider">
+                <div className="px-4 py-2 mt-2 text-[11px] font-semibold text-[var(--color-text-faint)] uppercase tracking-wider">
                   {query ? 'Search Results' : 'Recent Sessions'}
                 </div>
                 
@@ -124,15 +121,15 @@ export function CommandPalette({ isOpen, onClose, sessions, onSelectSession, onO
                         onSelectSession(session.raw.sessionId);
                         onClose();
                       }}
-                      className="w-full flex items-center justify-between px-4 py-3 hover:bg-[var(--color-accent-cobalt)]/[0.06] rounded-xl group text-left transition-colors outline-none focus:bg-[var(--color-accent-cobalt)]/[0.06]"
+                      className="w-full flex items-center justify-between px-4 py-3 hover:bg-[var(--color-accent-subtle)] rounded-xl group text-left transition-colors outline-none focus:bg-[var(--color-accent-subtle)]"
                     >
                       <div className="flex items-center gap-4 overflow-hidden">
-                        <div className="w-8 h-8 rounded-lg bg-black/[0.03] border border-black/[0.04] flex items-center justify-center flex-shrink-0 group-hover:bg-white group-hover:border-[var(--color-accent-cobalt)]/20 group-hover:shadow-sm transition-all">
-                          <Terminal className="w-4 h-4 text-[var(--color-ink-faint)] group-hover:text-[var(--color-accent-cobalt)]" />
+                        <div className="w-8 h-8 rounded-lg bg-[var(--color-bg-raised)] border border-[var(--color-border-subtle)] flex items-center justify-center flex-shrink-0 group-hover:bg-[var(--color-bg-doc)] group-hover:border-[var(--color-accent-main)]/20 group-hover:shadow-sm transition-all">
+                          <Terminal className="w-4 h-4 text-[var(--color-text-faint)] group-hover:text-[var(--color-accent-main)]" />
                         </div>
                         <div className="min-w-0">
-                          <div className="text-[14px] font-medium text-[var(--color-ink-main)] truncate">{title}</div>
-                          <div className="text-[12px] text-[var(--color-ink-muted)] truncate flex items-center gap-2 mt-0.5">
+                          <div className="text-[14px] font-medium text-[var(--color-text-main)] truncate">{title}</div>
+                          <div className="text-[12px] text-[var(--color-text-muted)] truncate flex items-center gap-2 mt-0.5">
                             <span className="flex items-center gap-1"><Folder className="w-3 h-3" /> {session.raw.projectName}</span>
                             {allTags.length > 0 && (
                               <>
@@ -144,10 +141,10 @@ export function CommandPalette({ isOpen, onClose, sessions, onSelectSession, onO
                         </div>
                       </div>
                       <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <span className="text-[12px] font-medium text-[var(--color-accent-cobalt)] flex items-center gap-1 bg-[var(--color-accent-cobalt)]/10 px-2.5 py-1 rounded-md">
+                        <span className="text-[12px] font-medium text-[var(--color-accent-main)] flex items-center gap-1 bg-[var(--color-accent-main)]/10 px-2.5 py-1 rounded-md">
                           <Play className="w-3 h-3 fill-current" /> Resume
                         </span>
-                        <span className="text-xs text-[var(--color-ink-faint)]">↵</span>
+                        <span className="text-xs text-[var(--color-text-faint)]">↵</span>
                       </div>
                     </button>
                   )})}
@@ -155,7 +152,7 @@ export function CommandPalette({ isOpen, onClose, sessions, onSelectSession, onO
               </>
             ) : (
               !showSettingsCommand && (
-                <div className="py-12 text-center text-[var(--color-ink-muted)] text-[14px]">
+                <div className="py-12 text-center text-[var(--color-text-muted)] text-[14px]">
                   No sessions found matching "{query}"
                 </div>
               )
@@ -163,27 +160,27 @@ export function CommandPalette({ isOpen, onClose, sessions, onSelectSession, onO
 
             {!query && (
               <>
-                <div className="px-4 py-2 mt-4 text-[11px] font-semibold text-[var(--color-ink-faint)] uppercase tracking-wider">
+                <div className="px-4 py-2 mt-4 text-[11px] font-semibold text-[var(--color-text-faint)] uppercase tracking-wider">
                   Commands
                 </div>
                 <div className="space-y-0.5 mb-2">
-                  <button className="w-full flex items-center gap-4 px-4 py-3 hover:bg-black/[0.03] rounded-xl text-left transition-colors outline-none focus:bg-black/[0.03]">
-                    <div className="w-8 h-8 rounded-lg bg-black/[0.02] border border-black/[0.04] flex items-center justify-center flex-shrink-0">
-                      <Terminal className="w-4 h-4 text-[var(--color-ink-muted)]" />
+                  <button className="w-full flex items-center gap-4 px-4 py-3 hover:bg-[var(--color-bg-hover)] rounded-xl text-left transition-colors outline-none focus:bg-[var(--color-bg-hover)]">
+                    <div className="w-8 h-8 rounded-lg bg-[var(--color-bg-raised)] border border-[var(--color-border-subtle)] flex items-center justify-center flex-shrink-0">
+                      <Terminal className="w-4 h-4 text-[var(--color-text-muted)]" />
                     </div>
-                    <div className="text-[14px] font-medium text-[var(--color-ink-main)]">Start New Session</div>
+                    <div className="text-[14px] font-medium text-[var(--color-text-main)]">Start New Session</div>
                   </button>
                   <button 
                     onClick={() => {
                       onClose();
                       onOpenSettings?.();
                     }}
-                    className="w-full flex items-center gap-4 px-4 py-3 hover:bg-black/[0.03] rounded-xl text-left transition-colors outline-none focus:bg-black/[0.03]"
+                    className="w-full flex items-center gap-4 px-4 py-3 hover:bg-[var(--color-bg-hover)] rounded-xl text-left transition-colors outline-none focus:bg-[var(--color-bg-hover)]"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-black/[0.02] border border-black/[0.04] flex items-center justify-center flex-shrink-0">
-                      <Settings className="w-4 h-4 text-[var(--color-ink-muted)]" />
+                    <div className="w-8 h-8 rounded-lg bg-[var(--color-bg-raised)] border border-[var(--color-border-subtle)] flex items-center justify-center flex-shrink-0">
+                      <Settings className="w-4 h-4 text-[var(--color-text-muted)]" />
                     </div>
-                    <div className="text-[14px] font-medium text-[var(--color-ink-main)]">Open Settings</div>
+                    <div className="text-[14px] font-medium text-[var(--color-text-main)]">Open Settings</div>
                   </button>
                 </div>
               </>

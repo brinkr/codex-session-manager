@@ -4,42 +4,76 @@
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
-  
-  --color-stone-base: #EBE9E4;
-  --color-stone-panel: #F4F3EE;
-  --color-stone-paper: #FFFFFF;
-  --color-ink-main: #18181B;
-  --color-ink-muted: #52525B;
-  --color-ink-faint: #A1A1AA;
-  --color-accent-cobalt: #2563EB;
 }
 
 :root {
-  --color-stone-base: #EBE9E4;
-  --color-stone-panel: #F4F3EE;
-  --color-stone-paper: #FFFFFF;
-  --color-ink-main: #18181B;
-  --color-ink-muted: #52525B;
-  --color-ink-faint: #A1A1AA;
-  --color-accent-cobalt: #2563EB;
+  /* Light Mode - Warm Precision */
+  --color-bg-app: #EBE9E4;
+  --color-bg-pane: #F4F3EE;
+  --color-bg-doc: #FFFFFF;
+  --color-bg-raised: #FFFFFF;
+  --color-bg-hover: rgba(0, 0, 0, 0.04);
+  --color-bg-active: rgba(0, 0, 0, 0.08);
+  
+  --color-text-main: #18181B;
+  --color-text-muted: #52525B;
+  --color-text-faint: #A1A1AA;
+  
+  --color-border-subtle: rgba(0, 0, 0, 0.06);
+  --color-border-strong: rgba(0, 0, 0, 0.15);
+  
+  /* Mature Cobalt / Indigo */
+  --color-accent-main: #3730A3; /* Indigo 800 */
+  --color-accent-hover: #312E81; /* Indigo 900 */
+  --color-accent-text: #FFFFFF;
+  --color-accent-subtle: rgba(55, 48, 163, 0.08);
+  
+  /* Status */
+  --color-success-bg: #D1FAE5;
+  --color-success-text: #047857;
+  --color-warning-bg: #FEF3C7;
+  --color-warning-text: #B45309;
+  --color-error-bg: #FEE2E2;
+  --color-error-text: #B91C1C;
 }
 
 :root.dark {
-  --color-stone-base: #121212;
-  --color-stone-panel: #1E1E1E;
-  --color-stone-paper: #252525;
-  --color-ink-main: #F4F4F5;
-  --color-ink-muted: #A1A1AA;
-  --color-ink-faint: #71717A;
-  --color-accent-cobalt: #3B82F6;
+  /* Dark Mode - Professional & Deep */
+  --color-bg-app: #09090B; /* Zinc 950 */
+  --color-bg-pane: #18181B; /* Zinc 900 */
+  --color-bg-doc: #202024; /* Slightly lighter for reading */
+  --color-bg-raised: #27272A; /* Zinc 800 */
+  --color-bg-hover: rgba(255, 255, 255, 0.06);
+  --color-bg-active: rgba(255, 255, 255, 0.1);
+  
+  --color-text-main: #F4F4F5; /* Zinc 100 */
+  --color-text-muted: #A1A1AA; /* Zinc 400 */
+  --color-text-faint: #71717A; /* Zinc 500 */
+  
+  --color-border-subtle: rgba(255, 255, 255, 0.08);
+  --color-border-strong: rgba(255, 255, 255, 0.15);
+  
+  /* Mature Cobalt / Indigo for Dark Mode */
+  --color-accent-main: #4F46E5; /* Indigo 600 */
+  --color-accent-hover: #4338CA; /* Indigo 700 */
+  --color-accent-text: #FFFFFF;
+  --color-accent-subtle: rgba(79, 70, 229, 0.15);
+  
+  /* Status */
+  --color-success-bg: rgba(16, 185, 129, 0.15);
+  --color-success-text: #34D399;
+  --color-warning-bg: rgba(245, 158, 11, 0.15);
+  --color-warning-text: #FBBF24;
+  --color-error-bg: rgba(239, 68, 68, 0.15);
+  --color-error-text: #F87171;
 }
 
 body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: var(--color-stone-base);
-  color: var(--color-ink-main);
+  background-color: var(--color-bg-app);
+  color: var(--color-text-main);
   overflow: hidden;
 }
 
@@ -54,20 +88,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.15);
+  background: var(--color-border-strong);
   border-radius: 10px;
 }
 
-:root.dark ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
-}
-
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.25);
-}
-
-:root.dark ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: var(--color-text-faint);
 }
 
 /* Subtle noise texture for the background */

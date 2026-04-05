@@ -1,19 +1,16 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { SessionRecord, ViewState } from '../types';
 import { cn } from '../lib/utils';
 import { 
   Search, 
-  Terminal, 
+  Folder, 
+  Clock, 
   Star, 
   Archive, 
-  Folder, 
-  Tag,
-  ChevronDown,
+  Hash, 
+  Terminal,
   ChevronRight,
-  Clock,
-  Sparkles,
-  MessageSquare,
-  Settings
+  Sparkles
 } from 'lucide-react';
 
 interface BrowserPaneProps {
@@ -23,7 +20,6 @@ interface BrowserPaneProps {
   selectedId: string | null;
   onSelect: (id: string) => void;
   onOpenCommandPalette: () => void;
-  onOpenSettings: () => void;
 }
 
 export function BrowserPane({ 
@@ -32,231 +28,221 @@ export function BrowserPane({
   onViewChange, 
   selectedId, 
   onSelect,
-  onOpenCommandPalette,
-  onOpenSettings
+  onOpenCommandPalette
 }: BrowserPaneProps) {
   
-  const [scenariosExpanded, setScenariosExpanded] = useState(true);
-  const [projectsExpanded, setProjectsExpanded] = useState(true);
-
-  // Extract unique projects and scenarios
-  const projects = Array.from(new Set(sessions.map(s => s.raw.projectName)));
-  const scenarios = Array.from(new Set(sessions.map(s => s.ai.tags.scenarioClassification).filter(Boolean) as string[]));
+  // Extract unique projects, scenarios, and tags for navigation
+  const projects = useMemo(() => Array.from(new Set(sessions.map(s => s.raw.projectName).filter(Boolean))), [sessions]);
+  const scenarios = useMemo(() => Array.from(new Set(sessions.map(s => s.ai.tags.scenarioClassification).filter(Boolean))), [sessions]);
+  const allTags = useMemo(() => {
+    const tags = new Set<string>();
+    sessions.forEach(s => {
+      s.user.manualTags.forEach(t => { if (t) tags.add(t) });
+      s.ai.tags.autoTags.forEach(t => { if (t) tags.add(t) });
+    });
+    return Array.from(tags);
+  }, [sessions]);
 
   return (
-    <div className="w-[320px] flex-shrink-0 bg-[var(--color-stone-panel)] flex flex-col h-full border-r border-black/[0.06] z-10 relative">
+    <div className="w-[280px] shrink-0 bg-[var(--color-bg-pane)] flex flex-col h-full border-r border-[var(--color-border-subtle)] z-30">
       
-      {/* Top: Search & Quick Filters */}
-      <div className="p-4 border-b border-black/[0.04]">
+      {/* Search Bar */}
+      <div className="p-4 shrink-0">
         <button 
           onClick={onOpenCommandPalette}
-          className="w-full flex items-center gap-2 px-3 py-2 bg-white border border-black/[0.06] rounded-lg text-[13px] text-[var(--color-ink-muted)] hover:border-black/[0.15] hover:text-[var(--color-ink-main)] transition-colors shadow-sm mb-4"
+          className="w-full flex items-center gap-2 px-3 py-2 bg-[var(--color-bg-raised)] border border-[var(--color-border-subtle)] rounded-lg text-[13px] text-[var(--color-text-faint)] hover:border-[var(--color-border-strong)] transition-colors shadow-sm group"
         >
-          <Search className="w-4 h-4" />
+          <Search className="w-4 h-4 text-[var(--color-text-faint)] group-hover:text-[var(--color-text-muted)] transition-colors" />
           <span className="flex-1 text-left">Search sessions...</span>
-          <kbd className="hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-sans font-medium text-[var(--color-ink-faint)] bg-black/[0.03] rounded border border-black/[0.05]">
-            ⌘K
-          </kbd>
+          <div className="flex items-center gap-1">
+            <kbd className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-[var(--color-bg-hover)] border border-[var(--color-border-subtle)] text-[var(--color-text-muted)]">⌘</kbd>
+            <kbd className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-[var(--color-bg-hover)] border border-[var(--color-border-subtle)] text-[var(--color-text-muted)]">K</kbd>
+          </div>
         </button>
-
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
-          <FilterChip 
-            active={currentView.type === 'all'} 
-            onClick={() => onViewChange({ type: 'all' })}
-            icon={<Clock className="w-3.5 h-3.5" />}
-            label="Recent"
-          />
-          <FilterChip 
-            active={currentView.type === 'starred'} 
-            onClick={() => onViewChange({ type: 'starred' })}
-            icon={<Star className="w-3.5 h-3.5" />}
-            label="Starred"
-          />
-          <FilterChip 
-            active={currentView.type === 'archived'} 
-            onClick={() => onViewChange({ type: 'archived' })}
-            icon={<Archive className="w-3.5 h-3.5" />}
-            label="Archived"
-          />
-        </div>
       </div>
 
-      {/* Middle: Groups */}
-      <div className="flex-shrink-0 overflow-y-auto no-scrollbar flex flex-col max-h-[30vh]">
-        
-        {/* Scenarios */}
-        <div className="py-2 border-b border-black/[0.04]">
-          <div 
-            className="px-4 py-2 flex items-center justify-between group cursor-pointer hover:bg-black/[0.02]"
-            onClick={() => setScenariosExpanded(!scenariosExpanded)}
-          >
-            <span className="text-[10px] font-bold text-[var(--color-ink-faint)] uppercase tracking-wider">Scenarios</span>
-            {scenariosExpanded ? (
-              <ChevronDown className="w-3.5 h-3.5 text-[var(--color-ink-faint)]" />
-            ) : (
-              <ChevronRight className="w-3.5 h-3.5 text-[var(--color-ink-faint)]" />
-            )}
+      <div className="flex-1 overflow-y-auto no-scrollbar pb-4">
+        {/* Navigation Sections */}
+        <div className="px-3 space-y-6">
+          
+          {/* Core Views */}
+          <div className="space-y-0.5">
+            <NavItem 
+              icon={<Clock className="w-4 h-4" />} 
+              label="All Sessions" 
+              count={sessions.length}
+              active={currentView.type === 'all'}
+              onClick={() => onViewChange({ type: 'all' })}
+            />
+            <NavItem 
+              icon={<Star className="w-4 h-4" />} 
+              label="Starred" 
+              active={currentView.type === 'starred'}
+              onClick={() => onViewChange({ type: 'starred' })}
+            />
+            <NavItem 
+              icon={<Archive className="w-4 h-4" />} 
+              label="Archive" 
+              active={currentView.type === 'archived'}
+              onClick={() => onViewChange({ type: 'archived' })}
+            />
           </div>
-          {scenariosExpanded && (
-            <div className="px-2 pb-2 space-y-0.5">
-              {scenarios.slice(0, 4).map(scenario => (
-                <button
+
+          {/* AI Scenarios */}
+          <div>
+            <div className="px-3 mb-2 flex items-center gap-2 text-[11px] font-bold text-[var(--color-text-faint)] uppercase tracking-wider">
+              <Sparkles className="w-3 h-3" />
+              Scenarios
+            </div>
+            <div className="space-y-0.5">
+              {scenarios.map(scenario => (
+                <NavItem 
                   key={scenario}
-                  onClick={() => onViewChange({ type: 'scenario', value: scenario as any })}
-                  className={cn(
-                    "w-full flex items-center gap-2.5 px-3 py-1.5 rounded-md text-[13px] font-medium transition-colors",
-                    currentView.type === 'scenario' && currentView.value === scenario
-                      ? "bg-white text-[var(--color-ink-main)] shadow-sm border border-black/[0.04]"
-                      : "text-[var(--color-ink-muted)] hover:text-[var(--color-ink-main)] hover:bg-black/[0.03] border border-transparent"
-                  )}
-                >
-                  <Sparkles className="w-3.5 h-3.5 opacity-70" />
-                  <span className="truncate capitalize">{scenario}</span>
-                </button>
+                  icon={<Terminal className="w-4 h-4" />} 
+                  label={scenario} 
+                  active={currentView.type === 'scenario' && currentView.value === scenario}
+                  onClick={() => onViewChange({ type: 'scenario', value: scenario })}
+                />
               ))}
             </div>
-          )}
-        </div>
-
-        {/* Projects */}
-        <div className="py-2 border-b border-black/[0.04]">
-          <div 
-            className="px-4 py-2 flex items-center justify-between group cursor-pointer hover:bg-black/[0.02]"
-            onClick={() => setProjectsExpanded(!projectsExpanded)}
-          >
-            <span className="text-[10px] font-bold text-[var(--color-ink-faint)] uppercase tracking-wider">Projects</span>
-            {projectsExpanded ? (
-              <ChevronDown className="w-3.5 h-3.5 text-[var(--color-ink-faint)]" />
-            ) : (
-              <ChevronRight className="w-3.5 h-3.5 text-[var(--color-ink-faint)]" />
-            )}
           </div>
-          {projectsExpanded && (
-            <div className="px-2 pb-2 space-y-0.5">
-              {projects.slice(0, 4).map(project => (
-                <button
+
+          {/* Projects */}
+          <div>
+            <div className="px-3 mb-2 text-[11px] font-bold text-[var(--color-text-faint)] uppercase tracking-wider">Projects</div>
+            <div className="space-y-0.5">
+              {projects.map(project => (
+                <NavItem 
                   key={project}
+                  icon={<Folder className="w-4 h-4" />} 
+                  label={project} 
+                  active={currentView.type === 'project' && currentView.value === project}
                   onClick={() => onViewChange({ type: 'project', value: project })}
-                  className={cn(
-                    "w-full flex items-center gap-2.5 px-3 py-1.5 rounded-md text-[13px] font-medium transition-colors",
-                    currentView.type === 'project' && currentView.value === project
-                      ? "bg-white text-[var(--color-ink-main)] shadow-sm border border-black/[0.04]"
-                      : "text-[var(--color-ink-muted)] hover:text-[var(--color-ink-main)] hover:bg-black/[0.03] border border-transparent"
-                  )}
-                >
-                  <Folder className="w-3.5 h-3.5 opacity-70" />
-                  <span className="truncate">{project}</span>
-                </button>
+                />
               ))}
             </div>
-          )}
-        </div>
-      </div>
+          </div>
 
-      {/* Bottom: Session List */}
-      <div className="flex-1 flex flex-col min-h-0">
-        <div className="px-4 py-3 flex items-center justify-between bg-[var(--color-stone-panel)] sticky top-0 z-10 border-b border-black/[0.02]">
-          <span className="text-[10px] font-bold text-[var(--color-ink-faint)] uppercase tracking-wider">
-            {currentView.type === 'all' ? 'All Sessions' : 
-             currentView.type === 'starred' ? 'Starred' :
-             currentView.type === 'archived' ? 'Archived' :
-             currentView.type === 'tag' ? `#${currentView.value}` :
-             currentView.type === 'scenario' ? currentView.value :
-             currentView.value}
-          </span>
-          <span className="text-[10px] font-mono text-[var(--color-ink-faint)]">{sessions.length}</span>
+          {/* Tags */}
+          <div>
+            <div className="px-3 mb-2 text-[11px] font-bold text-[var(--color-text-faint)] uppercase tracking-wider">Tags</div>
+            <div className="space-y-0.5">
+              {allTags.slice(0, 5).map(tag => (
+                <NavItem 
+                  key={tag}
+                  icon={<Hash className="w-4 h-4" />} 
+                  label={tag} 
+                  active={currentView.type === 'tag' && currentView.value === tag}
+                  onClick={() => onViewChange({ type: 'tag', value: tag })}
+                />
+              ))}
+            </div>
+          </div>
         </div>
-        
-        <div className="flex-1 overflow-y-auto p-2 space-y-1 no-scrollbar">
-          {sessions.map(session => {
-            const isSelected = session.raw.sessionId === selectedId;
-            const title = session.user.manualTitle || session.ai.summary.aiTitle || session.derived.fallbackTitle;
-            const allSessionTags = [...session.user.manualTags, ...session.ai.tags.autoTags];
-            
-            return (
-              <button
+
+        {/* Session List (Results) */}
+        <div className="mt-8 px-3">
+          <div className="px-3 mb-3 text-[11px] font-bold text-[var(--color-text-faint)] uppercase tracking-wider flex items-center justify-between">
+            <span>Results</span>
+            <span className="bg-[var(--color-bg-hover)] px-1.5 py-0.5 rounded text-[10px]">{sessions.length}</span>
+          </div>
+          <div className="space-y-1">
+            {sessions.map(session => (
+              <SessionItem 
                 key={session.raw.sessionId}
+                session={session}
+                active={selectedId === session.raw.sessionId}
                 onClick={() => onSelect(session.raw.sessionId)}
-                className={cn(
-                  "w-full text-left p-3 rounded-xl transition-all border outline-none",
-                  isSelected 
-                    ? "bg-white border-black/[0.08] shadow-[0_2px_8px_rgba(0,0,0,0.04)]" 
-                    : "bg-transparent border-transparent hover:bg-black/[0.03]"
-                )}
-              >
-                <div className="flex items-start justify-between gap-2 mb-1.5">
-                  <div className="flex items-center gap-2 min-w-0">
-                    {session.user.starred && <Star className="w-3.5 h-3.5 fill-[#D4AF37] text-[#D4AF37] flex-shrink-0" />}
-                    <span className={cn(
-                      "text-[13px] font-semibold truncate",
-                      isSelected ? "text-[var(--color-ink-main)]" : "text-[var(--color-ink-muted)]"
-                    )}>
-                      {title}
-                    </span>
-                  </div>
-                </div>
-                
-                <div className="text-[12px] text-[var(--color-ink-faint)] line-clamp-2 leading-relaxed mb-2.5">
-                  {session.derived.snippet}
-                </div>
-                
-                <div className="flex items-center justify-between text-[10px] font-mono text-[var(--color-ink-faint)]">
-                  <div className="flex items-center gap-2 truncate">
-                    <span className="truncate">{session.raw.projectName}</span>
-                    {allSessionTags.length > 0 && (
-                      <>
-                        <span className="w-1 h-1 rounded-full bg-black/10"></span>
-                        <span className="truncate">{allSessionTags[0]}</span>
-                      </>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <div className="flex items-center gap-1" title={`AI Summary: ${session.ai.summary.status}`}>
-                      <div className={cn(
-                        "w-1.5 h-1.5 rounded-full",
-                        session.ai.summary.status === 'completed' ? "bg-emerald-500" :
-                        session.ai.summary.status === 'generating' ? "bg-blue-500 animate-pulse" :
-                        session.ai.summary.status === 'failed' ? "bg-red-500" :
-                        "bg-black/10"
-                      )} />
-                    </div>
-                    <span className="ml-1">{new Date(session.raw.updatedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
-                  </div>
-                </div>
-              </button>
-            );
-          })}
+              />
+            ))}
+          </div>
         </div>
-      </div>
-
-      {/* Footer: Settings */}
-      <div className="p-3 border-t border-black/[0.04] bg-[var(--color-stone-panel)] shrink-0">
-        <button 
-          onClick={onOpenSettings}
-          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium text-[var(--color-ink-muted)] hover:text-[var(--color-ink-main)] hover:bg-black/[0.03] transition-colors"
-        >
-          <Settings className="w-4 h-4" />
-          <span>Preferences...</span>
-          <span className="ml-auto text-[10px] font-mono text-[var(--color-ink-faint)] opacity-60">⌘,</span>
-        </button>
       </div>
     </div>
   );
 }
 
-function FilterChip({ active, onClick, icon, label }: { active: boolean, onClick: () => void, icon: React.ReactNode, label: string }) {
+function NavItem({ 
+  icon, 
+  label, 
+  count, 
+  active, 
+  onClick 
+}: { 
+  icon: React.ReactNode; 
+  label: string; 
+  count?: number;
+  active?: boolean;
+  onClick: () => void;
+}) {
   return (
     <button
       onClick={onClick}
       className={cn(
-        "flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[12px] font-medium transition-colors whitespace-nowrap border",
+        "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-colors group",
         active 
-          ? "bg-white text-[var(--color-ink-main)] border-black/[0.06] shadow-sm" 
-          : "bg-transparent text-[var(--color-ink-muted)] border-transparent hover:bg-black/[0.04]"
+          ? "bg-[var(--color-bg-active)] text-[var(--color-text-main)]" 
+          : "text-[var(--color-text-muted)] hover:bg-[var(--color-bg-hover)] hover:text-[var(--color-text-main)]"
       )}
     >
-      {icon}
-      {label}
+      <span className={cn(
+        "transition-colors",
+        active ? "text-[var(--color-text-main)]" : "text-[var(--color-text-faint)] group-hover:text-[var(--color-text-muted)]"
+      )}>
+        {icon}
+      </span>
+      <span className="flex-1 text-left truncate">{label}</span>
+      {count !== undefined && (
+        <span className={cn(
+          "text-[11px] px-1.5 py-0.5 rounded-md transition-colors",
+          active ? "bg-[var(--color-bg-hover)] text-[var(--color-text-main)]" : "text-[var(--color-text-faint)] group-hover:text-[var(--color-text-muted)]"
+        )}>
+          {count}
+        </span>
+      )}
+    </button>
+  );
+}
+
+function SessionItem({ 
+  session, 
+  active, 
+  onClick 
+}: { 
+  session: SessionRecord; 
+  active: boolean; 
+  onClick: () => void;
+}) {
+  const title = session.user.manualTitle || session.ai.summary.aiTitle || session.derived.fallbackTitle;
+  const isAiTitled = !session.user.manualTitle && !!session.ai.summary.aiTitle;
+  
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "w-full text-left p-3 rounded-xl transition-all border",
+        active 
+          ? "bg-[var(--color-bg-raised)] border-[var(--color-border-strong)] shadow-sm" 
+          : "bg-transparent border-transparent hover:bg-[var(--color-bg-hover)]"
+      )}
+    >
+      <div className="flex items-start justify-between gap-2 mb-1.5">
+        <h4 className={cn(
+          "text-[13px] font-semibold leading-tight line-clamp-2",
+          active ? "text-[var(--color-text-main)]" : "text-[var(--color-text-muted)]"
+        )}>
+          {title}
+        </h4>
+        {isAiTitled && (
+          <Sparkles className="w-3 h-3 text-[var(--color-accent-main)] shrink-0 mt-0.5 opacity-50" />
+        )}
+      </div>
+      
+      <div className="flex items-center gap-2 text-[11px] text-[var(--color-text-faint)] font-mono">
+        <span className="truncate">{session.raw.projectName}</span>
+        <span className="w-1 h-1 rounded-full bg-[var(--color-border-strong)] shrink-0" />
+        <span className="shrink-0">{new Date(session.raw.updatedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+      </div>
     </button>
   );
 }

@@ -7,6 +7,7 @@ import { SettingsModal } from './components/SettingsModal';
 import { mockSessions } from './mockData';
 import { ViewState } from './types';
 import { motion } from 'motion/react';
+import { Settings } from 'lucide-react';
 
 export default function App() {
   const [sessions] = useState(mockSessions);
@@ -61,13 +62,13 @@ export default function App() {
   }, []);
 
   return (
-    <div className="h-screen w-screen overflow-hidden flex items-center justify-center bg-[var(--color-stone-base)] bg-noise selection:bg-[var(--color-accent-cobalt)]/20 selection:text-[var(--color-accent-cobalt)] p-2 sm:p-6 md:p-8">
+    <div className="h-screen w-screen overflow-hidden flex items-center justify-center bg-[var(--color-bg-app)] bg-noise selection:bg-[var(--color-accent-main)]/20 selection:text-[var(--color-accent-main)] p-2 sm:p-6 md:p-8">
       
       {/* App Window */}
-      <div className="w-full max-w-[1440px] h-full max-h-[960px] bg-[var(--color-stone-panel)] rounded-2xl shadow-[0_30px_60px_-15px_rgba(0,0,0,0.15),0_0_0_1px_rgba(0,0,0,0.05),inset_0_1px_0_rgba(255,255,255,0.8)] flex flex-col overflow-hidden relative z-10">
+      <div className="w-full max-w-[1440px] h-full max-h-[960px] bg-[var(--color-bg-pane)] rounded-2xl shadow-[0_30px_60px_-15px_rgba(0,0,0,0.15),0_0_0_1px_rgba(0,0,0,0.05),inset_0_1px_0_rgba(255,255,255,0.8)] flex flex-col overflow-hidden relative z-10">
         
         {/* Mac Titlebar & App Chrome */}
-        <div className="h-12 w-full flex items-center px-4 justify-between select-none z-50 relative shrink-0 border-b border-black/[0.04] bg-white/40 backdrop-blur-md">
+        <div className="h-12 w-full flex items-center px-4 justify-between select-none z-50 relative shrink-0 border-b border-[var(--color-border-subtle)] bg-[var(--color-bg-pane)]/80 backdrop-blur-md">
           <div className="flex items-center gap-4">
             {/* Traffic Lights */}
             <div className="flex items-center gap-2 w-16 group">
@@ -78,23 +79,32 @@ export default function App() {
           </div>
           
           <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
-            <span className="text-[13px] font-semibold text-[var(--color-ink-main)] tracking-wide">
+            <span className="text-[13px] font-semibold text-[var(--color-text-main)] tracking-wide">
               Codex Workspace
             </span>
-            <span className="px-1.5 py-0.5 rounded bg-black/[0.04] text-[10px] font-mono font-medium text-[var(--color-ink-muted)] border border-black/[0.03]">
+            <span className="px-1.5 py-0.5 rounded bg-[var(--color-bg-hover)] text-[10px] font-mono font-medium text-[var(--color-text-muted)] border border-[var(--color-border-subtle)]">
               BETA
             </span>
           </div>
           
-          <div className="hidden md:flex items-center gap-4 text-[11px] text-[var(--color-ink-muted)] font-mono">
+          <div className="hidden md:flex items-center gap-4 text-[11px] text-[var(--color-text-muted)] font-mono">
             <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-success-text)] shadow-[0_0_8px_var(--color-success-bg)]"></span>
               Local index ready
             </span>
-            <span className="w-px h-3 bg-black/10"></span>
+            <span className="w-px h-3 bg-[var(--color-border-strong)]"></span>
             <span>{sessions.length} sessions</span>
-            <span className="w-px h-3 bg-black/10"></span>
+            <span className="w-px h-3 bg-[var(--color-border-strong)]"></span>
             <span>Sync 2m ago</span>
+            <span className="w-px h-3 bg-[var(--color-border-strong)]"></span>
+            <button 
+              onClick={() => setIsSettingsOpen(true)}
+              className="flex items-center gap-1.5 hover:text-[var(--color-text-main)] transition-colors"
+              title="Preferences (Cmd+,)"
+            >
+              <Settings className="w-3.5 h-3.5" />
+              <span>Settings</span>
+            </button>
           </div>
         </div>
 
@@ -107,12 +117,11 @@ export default function App() {
             selectedId={selectedSessionId}
             onSelect={setSelectedSessionId}
             onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
-            onOpenSettings={() => setIsSettingsOpen(true)}
           />
           
           <DocumentPane session={selectedSession} />
           
-          <Inspector session={selectedSession} onOpenSettings={() => setIsSettingsOpen(true)} />
+          <Inspector session={selectedSession} />
         </div>
       </div>
 
