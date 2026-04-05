@@ -16,6 +16,7 @@ export default function App() {
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system');
+  const [accentTheme, setAccentTheme] = useState('indigo');
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -28,6 +29,10 @@ export default function App() {
       root.classList.add(theme);
     }
   }, [theme]);
+
+  useEffect(() => {
+    window.document.documentElement.setAttribute('data-accent-theme', accentTheme);
+  }, [accentTheme]);
 
   const filteredSessions = useMemo(() => {
     let result = sessions;
@@ -141,6 +146,8 @@ export default function App() {
         onClose={() => setIsSettingsOpen(false)} 
         theme={theme}
         setTheme={setTheme}
+        accentTheme={accentTheme}
+        setAccentTheme={setAccentTheme}
       />
     </div>
   );

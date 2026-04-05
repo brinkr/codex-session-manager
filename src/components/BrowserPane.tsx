@@ -31,17 +31,9 @@ export function BrowserPane({
   onOpenCommandPalette
 }: BrowserPaneProps) {
   
-  // Extract unique projects, scenarios, and tags for navigation
+  // Extract unique projects and scenarios for navigation
   const projects = useMemo(() => Array.from(new Set(sessions.map(s => s.raw.projectName).filter(Boolean))), [sessions]);
   const scenarios = useMemo(() => Array.from(new Set(sessions.map(s => s.ai.tags.scenarioClassification).filter(Boolean))), [sessions]);
-  const allTags = useMemo(() => {
-    const tags = new Set<string>();
-    sessions.forEach(s => {
-      s.user.manualTags.forEach(t => { if (t) tags.add(t) });
-      s.ai.tags.autoTags.forEach(t => { if (t) tags.add(t) });
-    });
-    return Array.from(tags);
-  }, [sessions]);
 
   return (
     <div className="w-[280px] shrink-0 bg-[var(--color-bg-pane)] flex flex-col h-full border-r border-[var(--color-border-subtle)] z-30">
@@ -61,9 +53,9 @@ export function BrowserPane({
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto no-scrollbar pb-4">
+      <div className="flex-1 flex flex-col overflow-hidden">
         {/* Navigation Sections */}
-        <div className="px-3 space-y-6">
+        <div className="px-3 space-y-6 shrink-0 pb-4 border-b border-[var(--color-border-subtle)]">
           
           {/* Core Views */}
           <div className="space-y-0.5">
@@ -122,26 +114,10 @@ export function BrowserPane({
               ))}
             </div>
           </div>
-
-          {/* Tags */}
-          <div>
-            <div className="px-3 mb-2 text-[11px] font-bold text-[var(--color-text-faint)] uppercase tracking-wider">Tags</div>
-            <div className="space-y-0.5">
-              {allTags.slice(0, 5).map(tag => (
-                <NavItem 
-                  key={tag}
-                  icon={<Hash className="w-4 h-4" />} 
-                  label={tag} 
-                  active={currentView.type === 'tag' && currentView.value === tag}
-                  onClick={() => onViewChange({ type: 'tag', value: tag })}
-                />
-              ))}
-            </div>
-          </div>
         </div>
 
-        {/* Session List (Results) */}
-        <div className="mt-8 px-3">
+        {/* Session List (Results) - Now takes remaining space */}
+        <div className="flex-1 overflow-y-auto no-scrollbar pb-4 pt-4 px-3">
           <div className="px-3 mb-3 text-[11px] font-bold text-[var(--color-text-faint)] uppercase tracking-wider flex items-center justify-between">
             <span>Results</span>
             <span className="bg-[var(--color-bg-hover)] px-1.5 py-0.5 rounded text-[10px]">{sessions.length}</span>

@@ -12,7 +12,9 @@ import {
   AlertCircle,
   Loader2,
   Play,
-  User
+  User,
+  Tag,
+  Clock
 } from 'lucide-react';
 
 interface DocumentPaneProps {
@@ -92,6 +94,24 @@ export function DocumentPane({ session }: DocumentPaneProps) {
                   <span>{session.raw.turnCount} Turns</span>
                 </div>
               </div>
+
+              {/* Tag Row */}
+              {(session.user.manualTags.length > 0 || session.ai.tags.autoTags.length > 0) && (
+                <div className="flex flex-wrap items-center gap-2 mt-2">
+                  {session.user.manualTags.map(tag => (
+                    <span key={tag} className="px-2 py-1 bg-[var(--color-bg-raised)] border border-[var(--color-border-strong)] text-[var(--color-text-main)] text-[11px] font-medium rounded-md flex items-center gap-1">
+                      <Tag className="w-3 h-3 text-[var(--color-text-muted)]" />
+                      {tag}
+                    </span>
+                  ))}
+                  {session.ai.tags.autoTags.map(tag => (
+                    <span key={tag} className="px-2 py-1 bg-transparent border border-[var(--color-border-subtle)] text-[var(--color-text-muted)] text-[11px] font-medium rounded-md flex items-center gap-1">
+                      <Sparkles className="w-3 h-3 text-[var(--color-text-faint)]" />
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* AI Summary (Abstract) */}

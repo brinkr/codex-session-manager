@@ -22,7 +22,7 @@
   --color-border-subtle: rgba(0, 0, 0, 0.06);
   --color-border-strong: rgba(0, 0, 0, 0.15);
   
-  /* Mature Cobalt / Indigo */
+  /* Default Theme (Indigo) */
   --color-accent-main: #3730A3; /* Indigo 800 */
   --color-accent-hover: #312E81; /* Indigo 900 */
   --color-accent-text: #FFFFFF;
@@ -53,7 +53,7 @@
   --color-border-subtle: rgba(255, 255, 255, 0.08);
   --color-border-strong: rgba(255, 255, 255, 0.15);
   
-  /* Mature Cobalt / Indigo for Dark Mode */
+  /* Default Theme (Indigo) for Dark Mode */
   --color-accent-main: #4F46E5; /* Indigo 600 */
   --color-accent-hover: #4338CA; /* Indigo 700 */
   --color-accent-text: #FFFFFF;
@@ -66,6 +66,59 @@
   --color-warning-text: #FBBF24;
   --color-error-bg: rgba(239, 68, 68, 0.15);
   --color-error-text: #F87171;
+}
+
+/* Accent Themes */
+[data-accent-theme="graphite"] {
+  --color-accent-main: #475569;
+  --color-accent-hover: #334155;
+  --color-accent-text: #FFFFFF;
+  --color-accent-subtle: rgba(71, 85, 105, 0.08);
+}
+:root.dark[data-accent-theme="graphite"] {
+  --color-accent-main: #94A3B8;
+  --color-accent-hover: #CBD5E1;
+  --color-accent-text: #0F172A;
+  --color-accent-subtle: rgba(148, 163, 184, 0.15);
+}
+
+[data-accent-theme="cobalt"] {
+  --color-accent-main: #2563EB;
+  --color-accent-hover: #1D4ED8;
+  --color-accent-text: #FFFFFF;
+  --color-accent-subtle: rgba(37, 99, 235, 0.08);
+}
+:root.dark[data-accent-theme="cobalt"] {
+  --color-accent-main: #3B82F6;
+  --color-accent-hover: #60A5FA;
+  --color-accent-text: #FFFFFF;
+  --color-accent-subtle: rgba(59, 130, 246, 0.15);
+}
+
+[data-accent-theme="forest"] {
+  --color-accent-main: #059669;
+  --color-accent-hover: #047857;
+  --color-accent-text: #FFFFFF;
+  --color-accent-subtle: rgba(5, 150, 105, 0.08);
+}
+:root.dark[data-accent-theme="forest"] {
+  --color-accent-main: #10B981;
+  --color-accent-hover: #34D399;
+  --color-accent-text: #FFFFFF;
+  --color-accent-subtle: rgba(16, 185, 129, 0.15);
+}
+
+[data-accent-theme="amber"] {
+  --color-accent-main: #D97706;
+  --color-accent-hover: #B45309;
+  --color-accent-text: #FFFFFF;
+  --color-accent-subtle: rgba(217, 119, 6, 0.08);
+}
+:root.dark[data-accent-theme="amber"] {
+  --color-accent-main: #F59E0B;
+  --color-accent-hover: #FBBF24;
+  --color-accent-text: #FFFFFF;
+  --color-accent-subtle: rgba(245, 158, 11, 0.15);
 }
 
 body {

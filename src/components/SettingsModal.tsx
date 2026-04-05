@@ -16,11 +16,13 @@ interface SettingsModalProps {
   onClose: () => void;
   theme: 'light' | 'dark' | 'system';
   setTheme: (theme: 'light' | 'dark' | 'system') => void;
+  accentTheme: string;
+  setAccentTheme: (theme: string) => void;
 }
 
 type SettingsTab = 'general' | 'appearance' | 'language' | 'ai' | 'data' | 'privacy';
 
-export function SettingsModal({ isOpen, onClose, theme, setTheme }: SettingsModalProps) {
+export function SettingsModal({ isOpen, onClose, theme, setTheme, accentTheme, setAccentTheme }: SettingsModalProps) {
   const [activeTab, setActiveTab] = useState<SettingsTab>('appearance');
 
   if (!isOpen) return null;
@@ -68,7 +70,7 @@ export function SettingsModal({ isOpen, onClose, theme, setTheme }: SettingsModa
               </button>
 
               <div className="flex-1 overflow-y-auto p-10">
-                {activeTab === 'appearance' && <AppearanceSettings theme={theme} setTheme={setTheme} />}
+                {activeTab === 'appearance' && <AppearanceSettings theme={theme} setTheme={setTheme} accentTheme={accentTheme} setAccentTheme={setAccentTheme} />}
                 {activeTab === 'language' && <LanguageSettings />}
                 {activeTab === 'ai' && <AISettings />}
                 {activeTab === 'data' && <DataSettings />}
@@ -105,7 +107,7 @@ function TabButton({ active, onClick, icon, label }: { active: boolean, onClick:
   );
 }
 
-function AppearanceSettings({ theme, setTheme }: { theme: 'light' | 'dark' | 'system', setTheme: (t: 'light' | 'dark' | 'system') => void }) {
+function AppearanceSettings({ theme, setTheme, accentTheme, setAccentTheme }: { theme: 'light' | 'dark' | 'system', setTheme: (t: 'light' | 'dark' | 'system') => void, accentTheme: string, setAccentTheme: (t: string) => void }) {
   return (
     <div className="space-y-8 max-w-lg">
       <div>
@@ -119,6 +121,17 @@ function AppearanceSettings({ theme, setTheme }: { theme: 'light' | 'dark' | 'sy
           <ThemeOption active={theme === 'light'} onClick={() => setTheme('light')} label="Light" />
           <ThemeOption active={theme === 'dark'} onClick={() => setTheme('dark')} label="Dark" />
           <ThemeOption active={theme === 'system'} onClick={() => setTheme('system')} label="System" />
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <h3 className="text-[12px] font-bold text-[var(--color-text-faint)] uppercase tracking-wider">Accent Theme</h3>
+        <div className="grid grid-cols-5 gap-3">
+          <AccentOption active={accentTheme === 'graphite'} onClick={() => setAccentTheme('graphite')} color="#475569" label="Graphite" />
+          <AccentOption active={accentTheme === 'cobalt'} onClick={() => setAccentTheme('cobalt')} color="#2563EB" label="Cobalt" />
+          <AccentOption active={accentTheme === 'indigo'} onClick={() => setAccentTheme('indigo')} color="#4F46E5" label="Indigo" />
+          <AccentOption active={accentTheme === 'forest'} onClick={() => setAccentTheme('forest')} color="#059669" label="Forest" />
+          <AccentOption active={accentTheme === 'amber'} onClick={() => setAccentTheme('amber')} color="#D97706" label="Amber" />
         </div>
       </div>
 
@@ -157,6 +170,24 @@ function ThemeOption({ active, onClick, label }: { active: boolean, onClick: () 
         <div className={cn("w-1/3 h-full border-r", label === 'Dark' ? 'border-white/5 bg-white/5' : 'border-black/5 bg-black/5')} />
       </div>
       <span className={cn("text-[13px] font-medium", active ? "text-[var(--color-accent-main)]" : "text-[var(--color-text-main)]")}>{label}</span>
+    </button>
+  );
+}
+
+function AccentOption({ active, onClick, color, label }: { active: boolean, onClick: () => void, color: string, label: string }) {
+  return (
+    <button 
+      onClick={onClick}
+      className={cn(
+        "flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all",
+        active ? "border-[var(--color-accent-main)] bg-[var(--color-accent-subtle)]" : "border-[var(--color-border-subtle)] hover:border-[var(--color-border-strong)] bg-[var(--color-bg-raised)]"
+      )}
+    >
+      <div 
+        className="w-6 h-6 rounded-full shadow-sm"
+        style={{ backgroundColor: color }}
+      />
+      <span className={cn("text-[11px] font-medium", active ? "text-[var(--color-accent-main)]" : "text-[var(--color-text-main)]")}>{label}</span>
     </button>
   );
 }
