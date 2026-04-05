@@ -10,19 +10,33 @@ export interface Turn {
 
 export interface Session {
   id: string;
-  title: string;
+  
+  // Titles
+  manualTitle?: string;
+  fallbackTitle: string;
+  
+  // Content
   firstPrompt: string;
-  summary: string;
+  turns: Turn[];
+  
+  // AI Augmentation
+  summaryStatus: 'none' | 'generating' | 'completed' | 'failed';
+  summary?: string;
+  autoTags: string[];
+  
+  // User Data
+  manualTags: string[];
+  note?: string;
+  isStarred: boolean;
+  isArchived: boolean;
+  
+  // Metadata
   updatedAt: string;
   lastOpenedAt: string;
   projectPath: string;
   projectName: string;
   turnCount: number;
   resumeCount: number;
-  isStarred: boolean;
-  isArchived: boolean;
-  tags: string[];
-  turns: Turn[];
   model: string;
   branch: string;
 }

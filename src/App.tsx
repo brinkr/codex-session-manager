@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Sidebar } from './components/Sidebar';
-import { SessionList } from './components/SessionList';
-import { SessionDetail } from './components/SessionDetail';
+import { BrowserPane } from './components/BrowserPane';
+import { DocumentPane } from './components/DocumentPane';
+import { Inspector } from './components/Inspector';
 import { CommandPalette } from './components/CommandPalette';
 import { mockSessions } from './mockData';
 import { ViewState } from './types';
@@ -18,7 +18,7 @@ export default function App() {
     switch (currentView.type) {
       case 'starred': result = result.filter(s => s.isStarred); break;
       case 'archived': result = result.filter(s => s.isArchived); break;
-      case 'tag': result = result.filter(s => s.tags.includes(currentView.value)); break;
+      case 'tag': result = result.filter(s => s.manualTags.includes(currentView.value) || s.autoTags.includes(currentView.value)); break;
       case 'project': result = result.filter(s => s.projectName === currentView.value); break;
       case 'all': default: result = result.filter(s => !s.isArchived); break;
     }
@@ -78,21 +78,20 @@ export default function App() {
           </div>
         </div>
 
-        {/* Main Content Area */}
+        {/* Main Content Area - Strict 3 Columns */}
         <div className="flex-1 flex overflow-hidden relative">
-          <Sidebar 
-            currentView={currentView} 
-            onViewChange={setCurrentView} 
+          <BrowserPane 
+            sessions={filteredSessions}
+            currentView={currentView}
+            onViewChange={setCurrentView}
+            selectedId={selectedSessionId}
+            onSelect={setSelectedSessionId}
             onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
           />
           
-          <SessionList 
-            sessions={filteredSessions} 
-            selectedId={selectedSessionId} 
-            onSelect={setSelectedSessionId} 
-          />
+          <DocumentPane session={selectedSession} />
           
-          <SessionDetail session={selectedSession} />
+          <Inspector session={selectedSession} />
         </div>
       </div>
 

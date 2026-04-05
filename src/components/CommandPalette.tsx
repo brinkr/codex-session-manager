@@ -40,7 +40,9 @@ export function CommandPalette({ isOpen, onClose, sessions, onSelectSession }: C
   }, [isOpen]);
 
   const filteredSessions = sessions.filter(s => {
-    const searchStr = `${s.title} ${s.projectName} ${s.tags.join(' ')}`.toLowerCase();
+    const title = s.manualTitle || s.fallbackTitle;
+    const allTags = [...s.manualTags, ...s.autoTags];
+    const searchStr = `${title} ${s.projectName} ${allTags.join(' ')}`.toLowerCase();
     return searchStr.includes(query.toLowerCase());
   });
 
@@ -92,7 +94,10 @@ export function CommandPalette({ isOpen, onClose, sessions, onSelectSession }: C
                 </div>
                 
                 <div className="space-y-0.5">
-                  {filteredSessions.slice(0, 6).map((session) => (
+                  {filteredSessions.slice(0, 6).map((session) => {
+                    const title = session.manualTitle || session.fallbackTitle;
+                    const allTags = [...session.manualTags, ...session.autoTags];
+                    return (
                     <button
                       key={session.id}
                       onClick={() => {
@@ -106,13 +111,13 @@ export function CommandPalette({ isOpen, onClose, sessions, onSelectSession }: C
                           <Terminal className="w-4 h-4 text-[var(--color-ink-faint)] group-hover:text-[var(--color-accent-cobalt)]" />
                         </div>
                         <div className="min-w-0">
-                          <div className="text-[14px] font-medium text-[var(--color-ink-main)] truncate">{session.title}</div>
+                          <div className="text-[14px] font-medium text-[var(--color-ink-main)] truncate">{title}</div>
                           <div className="text-[12px] text-[var(--color-ink-muted)] truncate flex items-center gap-2 mt-0.5">
                             <span className="flex items-center gap-1"><Folder className="w-3 h-3" /> {session.projectName}</span>
-                            {session.tags.length > 0 && (
+                            {allTags.length > 0 && (
                               <>
                                 <span>•</span>
-                                <span className="flex items-center gap-1"><Tag className="w-3 h-3" /> {session.tags[0]}</span>
+                                <span className="flex items-center gap-1"><Tag className="w-3 h-3" /> {allTags[0]}</span>
                               </>
                             )}
                           </div>
@@ -125,7 +130,7 @@ export function CommandPalette({ isOpen, onClose, sessions, onSelectSession }: C
                         <span className="text-xs text-[var(--color-ink-faint)]">↵</span>
                       </div>
                     </button>
-                  ))}
+                  )})}
                 </div>
               </>
             ) : (
