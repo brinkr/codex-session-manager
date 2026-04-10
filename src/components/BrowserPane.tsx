@@ -96,33 +96,6 @@ export function BrowserPane({
             />
           </div>
 
-          {/* AI Scenarios */}
-          <div>
-            <button 
-              onClick={() => setScenariosExpanded(!scenariosExpanded)}
-              className="w-full px-3 py-1.5 flex items-center justify-between text-[11px] font-bold text-[var(--color-text-faint)] hover:text-[var(--color-text-muted)] uppercase tracking-wider transition-colors group"
-            >
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-3 h-3" />
-                Scenarios
-              </div>
-              {scenariosExpanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
-            </button>
-            {scenariosExpanded && (
-              <div className="space-y-0.5 mt-1">
-                {scenarios.map(scenario => (
-                  <NavItem 
-                    key={scenario}
-                    icon={<Terminal className="w-4 h-4" />} 
-                    label={scenario} 
-                    active={currentView.type === 'scenario' && currentView.value === scenario}
-                    onClick={() => onViewChange({ type: 'scenario', value: scenario })}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-
           {/* Projects */}
           <div>
             <button 
@@ -144,6 +117,33 @@ export function BrowserPane({
                     label={project} 
                     active={currentView.type === 'project' && currentView.value === project}
                     onClick={() => onViewChange({ type: 'project', value: project })}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* AI Scenarios */}
+          <div>
+            <button 
+              onClick={() => setScenariosExpanded(!scenariosExpanded)}
+              className="w-full px-3 py-1.5 flex items-center justify-between text-[11px] font-bold text-[var(--color-text-faint)] hover:text-[var(--color-text-muted)] uppercase tracking-wider transition-colors group"
+            >
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-3 h-3" />
+                Scenarios
+              </div>
+              {scenariosExpanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
+            </button>
+            {scenariosExpanded && (
+              <div className="space-y-0.5 mt-1">
+                {scenarios.map(scenario => (
+                  <NavItem 
+                    key={scenario}
+                    icon={<Terminal className="w-4 h-4" />} 
+                    label={scenario} 
+                    active={currentView.type === 'scenario' && currentView.value === scenario}
+                    onClick={() => onViewChange({ type: 'scenario', value: scenario })}
                   />
                 ))}
               </div>
