@@ -38,13 +38,27 @@ export default function App() {
     let result = sessions;
     switch (currentView.type) {
       case 'starred': result = result.filter(s => s.user.starred); break;
+      case 'pinned': result = result.filter(s => s.user.pinned); break;
+      case 'recent': 
+        // Just sort by date, maybe limit to top 20, but for now just sort
+        break;
       case 'archived': result = result.filter(s => s.user.archived); break;
       case 'tag': result = result.filter(s => s.user.manualTags.includes(currentView.value!) || s.ai.tags.autoTags.includes(currentView.value!)); break;
       case 'project': result = result.filter(s => s.raw.projectName === currentView.value); break;
       case 'scenario': result = result.filter(s => s.ai.tags.scenarioClassification === currentView.value); break;
       case 'all': default: result = result.filter(s => !s.user.archived); break;
     }
-    return result.sort((a, b) => new Date(b.raw.updatedAt).getTime() - new Date(a.raw.updatedAt).getTime());
+    
+    // Sort logic: Pinned items first if we are in 'all' or 'recent' view?
+    // Actually, the user asked for pinned to be a quick filter, which we did.
+    // If we want pinned at the top of 'all', we can do that here.
+    return result.sort((a, b) => {
+      if (currentView.type === 'all' || currentView.type === 'recent') {
+        if (a.user.pinned && !b.user.pinned) return -1;
+        if (!a.user.pinned && b.user.pinned) return 1;
+      }
+      return new Date(b.raw.updatedAt).getTime() - new Date(a.raw.updatedAt).getTime();
+    });
   }, [sessions, currentView]);
 
   const selectedSession = useMemo(() => {

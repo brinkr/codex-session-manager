@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { SessionRecord, ViewState } from '../types';
 import { cn } from '../lib/utils';
 import { 
@@ -10,7 +10,9 @@ import {
   Hash, 
   Terminal,
   ChevronRight,
-  Sparkles
+  ChevronDown,
+  Sparkles,
+  Pin
 } from 'lucide-react';
 
 interface BrowserPaneProps {
@@ -30,6 +32,8 @@ export function BrowserPane({
   onSelect,
   onOpenCommandPalette
 }: BrowserPaneProps) {
+  const [scenariosExpanded, setScenariosExpanded] = useState(false);
+  const [projectsExpanded, setProjectsExpanded] = useState(false);
   
   // Extract unique projects and scenarios for navigation
   const projects = useMemo(() => Array.from(new Set(sessions.map(s => s.raw.projectName).filter(Boolean))), [sessions]);
@@ -55,7 +59,7 @@ export function BrowserPane({
 
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Navigation Sections */}
-        <div className="px-3 space-y-6 shrink-0 pb-4 border-b border-[var(--color-border-subtle)]">
+        <div className="px-3 space-y-4 shrink-0 pb-4 border-b border-[var(--color-border-subtle)]">
           
           {/* Core Views */}
           <div className="space-y-0.5">
@@ -65,6 +69,18 @@ export function BrowserPane({
               count={sessions.length}
               active={currentView.type === 'all'}
               onClick={() => onViewChange({ type: 'all' })}
+            />
+            <NavItem 
+              icon={<Clock className="w-4 h-4" />} 
+              label="Recent" 
+              active={currentView.type === 'recent'}
+              onClick={() => onViewChange({ type: 'recent' })}
+            />
+            <NavItem 
+              icon={<Pin className="w-4 h-4" />} 
+              label="Pinned" 
+              active={currentView.type === 'pinned'}
+              onClick={() => onViewChange({ type: 'pinned' })}
             />
             <NavItem 
               icon={<Star className="w-4 h-4" />} 
@@ -82,37 +98,56 @@ export function BrowserPane({
 
           {/* AI Scenarios */}
           <div>
-            <div className="px-3 mb-2 flex items-center gap-2 text-[11px] font-bold text-[var(--color-text-faint)] uppercase tracking-wider">
-              <Sparkles className="w-3 h-3" />
-              Scenarios
-            </div>
-            <div className="space-y-0.5">
-              {scenarios.map(scenario => (
-                <NavItem 
-                  key={scenario}
-                  icon={<Terminal className="w-4 h-4" />} 
-                  label={scenario} 
-                  active={currentView.type === 'scenario' && currentView.value === scenario}
-                  onClick={() => onViewChange({ type: 'scenario', value: scenario })}
-                />
-              ))}
-            </div>
+            <button 
+              onClick={() => setScenariosExpanded(!scenariosExpanded)}
+              className="w-full px-3 py-1.5 flex items-center justify-between text-[11px] font-bold text-[var(--color-text-faint)] hover:text-[var(--color-text-muted)] uppercase tracking-wider transition-colors group"
+            >
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-3 h-3" />
+                Scenarios
+              </div>
+              {scenariosExpanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
+            </button>
+            {scenariosExpanded && (
+              <div className="space-y-0.5 mt-1">
+                {scenarios.map(scenario => (
+                  <NavItem 
+                    key={scenario}
+                    icon={<Terminal className="w-4 h-4" />} 
+                    label={scenario} 
+                    active={currentView.type === 'scenario' && currentView.value === scenario}
+                    onClick={() => onViewChange({ type: 'scenario', value: scenario })}
+                  />
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Projects */}
           <div>
-            <div className="px-3 mb-2 text-[11px] font-bold text-[var(--color-text-faint)] uppercase tracking-wider">Projects</div>
-            <div className="space-y-0.5">
-              {projects.map(project => (
-                <NavItem 
-                  key={project}
-                  icon={<Folder className="w-4 h-4" />} 
-                  label={project} 
-                  active={currentView.type === 'project' && currentView.value === project}
-                  onClick={() => onViewChange({ type: 'project', value: project })}
-                />
-              ))}
-            </div>
+            <button 
+              onClick={() => setProjectsExpanded(!projectsExpanded)}
+              className="w-full px-3 py-1.5 flex items-center justify-between text-[11px] font-bold text-[var(--color-text-faint)] hover:text-[var(--color-text-muted)] uppercase tracking-wider transition-colors group"
+            >
+              <div className="flex items-center gap-2">
+                <Folder className="w-3 h-3" />
+                Projects
+              </div>
+              {projectsExpanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
+            </button>
+            {projectsExpanded && (
+              <div className="space-y-0.5 mt-1">
+                {projects.map(project => (
+                  <NavItem 
+                    key={project}
+                    icon={<Folder className="w-4 h-4" />} 
+                    label={project} 
+                    active={currentView.type === 'project' && currentView.value === project}
+                    onClick={() => onViewChange({ type: 'project', value: project })}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
@@ -207,6 +242,7 @@ function SessionItem({
           "text-[13px] font-semibold leading-tight line-clamp-2",
           active ? "text-[var(--color-text-main)]" : "text-[var(--color-text-muted)]"
         )}>
+          {session.user.pinned && <Pin className="w-3 h-3 inline-block mr-1.5 text-[var(--color-text-faint)] -mt-0.5" />}
           {title}
         </h4>
         {isAiTitled && (

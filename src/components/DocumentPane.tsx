@@ -51,9 +51,9 @@ export function DocumentPane({ session }: DocumentPaneProps) {
       >
         <div className="flex-1 overflow-y-auto no-scrollbar relative">
           
-          <div className="px-12 py-16 max-w-[860px] mx-auto w-full">
+          <div className="px-12 py-8 max-w-[860px] mx-auto w-full">
             {/* Document Title */}
-            <div className="mb-6 flex items-start gap-3">
+            <div className="mb-4 flex items-start gap-3">
               <h1 className="text-[28px] font-bold text-[var(--color-text-main)] leading-[1.3] tracking-tight">
                 {title}
               </h1>

@@ -325,7 +325,7 @@ export const mockSessions: SessionRecord[] = [
       suppressedAutoTags: [],
       starred: true,
       archived: false,
-      pinned: false,
+      pinned: true,
       resumeCount: 8
     }
   }

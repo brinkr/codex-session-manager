@@ -101,7 +101,7 @@ export interface SessionUser {
   starred: boolean;
   archived: boolean;
   pinned: boolean;
-  note?: string;
+  notes?: string;
   lastOpenedAt?: ISODateTime;
   resumeCount: number;
 }
@@ -115,6 +115,8 @@ export interface SessionRecord {
 
 export type ViewState = 
   | { type: 'all' }
+  | { type: 'recent' }
+  | { type: 'pinned' }
   | { type: 'starred' }
   | { type: 'archived' }
   | { type: 'tag'; value: string }
